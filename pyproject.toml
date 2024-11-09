@@ -11,6 +11,7 @@ dependencies = [
     "cupang-downloader @ https://github.com/cupang-afk/cupang-downloader/archive/master.zip",
     "toml>=0.10.2",
     "requests>=2.32.3",
+    "packaging>=24.2",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
