@@ -1,6 +1,6 @@
 [project]
 name = "cupang-updater"
-version = "0.0.1"
+dynamic = ["version"]
 description = "A Minecraft Server/Plugin Updater"
 authors = [{ name = "cupang-afk", email = "pixelview56@gmail.com" }]
 dependencies = [
@@ -15,8 +15,12 @@ dependencies = [
 ]
 requires-python = ">=3.12"
 readme = "README.md"
-license = { file = "LICENCE" }
+license = { file = "LICENSE" }
 keywords = ["minecraft", "updater", "server", "plugin", "spigot", "paper"]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project.scripts]
 cupang-updater = "cupang_updater.main:main"
