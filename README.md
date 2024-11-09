@@ -1,9 +1,15 @@
-A Minecraft plugin downloader
+A Minecraft Server/Plugin Updater
+
+This is a rewrite of [cupang-updater](https://github.com/cupang-afk/cupang-updater) with a focus on making it easier to implement new features.
+
+### Documentation
+
+The documentation for this project can be found [here](https://cupang-afk.github.io/cupang-updater2).
 
 ### Install
 
 ```python
-pip install git+https://github.com/cupang-afk/cupang-updater
+pip install git+https://github.com/cupang-afk/cupang-updater2.git#egg=cupang-updater
 ```
 
 ### Usage
@@ -12,11 +18,7 @@ pip install git+https://github.com/cupang-afk/cupang-updater
 $ cupang-updater
 ```
 
-The first run will create a `cupang-updater` directory in your current
-working directory, which contains a `config.yaml` file that serves as the
-configuration for each updater. You can change the location of the
-configuration directory or the configuration file itself using the
-`--config-dir` and `--config` options, respectively.
+Running for the first time creates a `cupang-updater` directory with a `config.yaml` file for configuration. Use `--config-dir` and `--config` to change their locations.
 
 ### Custom Updater
 
@@ -39,7 +41,7 @@ plugin_updater_register(MyCustomPluginUpdater)
 Place your custom updater script in `cupang-updater/ext_updater` as a `.py` file, and it will be automatically detected.
 
 <details>
-<summary>example `hangar.py`</summary>
+<summary>example hangar.py</summary>
 
 ```python
 import json
@@ -200,4 +202,9 @@ Contributions are welcome! Feel free to open an issue or submit a pull request o
 
 ### License
 
-This project is licensed under the GNU General Public License. See the `LICENSE` file for more information.
+This project is licensed under the GNU General Public License version 3. See the `LICENSE` file for more information.
+
+
+### TODO
+
+- [ ] Update documentation
