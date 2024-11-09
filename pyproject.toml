@@ -1,0 +1,40 @@
+[project]
+name = "cupang-updater"
+version = "0.0.1"
+description = "A Minecraft Server/Plugin Updater"
+authors = [{ name = "cupang-afk", email = "pixelview56@gmail.com" }]
+dependencies = [
+    "strictyaml>=1.7.3",
+    "python-dateutil>=2.9.0.post0",
+    "rich>=13.9.3",
+    "pycurl>=7.45.3",
+    "cupang-downloader @ https://github.com/cupang-afk/cupang-downloader/archive/master.zip",
+    "toml>=0.10.2",
+    "requests>=2.32.3",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = { file = "LICENCE" }
+keywords = ["minecraft", "updater", "server", "plugin", "spigot", "paper"]
+
+[project.scripts]
+cupang-updater = "cupang_updater.main:main"
+
+[tool.pdm]
+distribution = false
+
+[tool.pdm.version]
+source = "scm"
+write_to = "cupang_updater/_version.py"
+write_template = "__version__ = '{}'"
+
+[tool.pdm.dev-dependencies]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.5.44",
+    "mkdocstrings[python]>=0.26.2",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.1",
+    "mkdocs-section-index>=0.3.9",
+    "mkdocs-callouts>=1.14.0",
+]
