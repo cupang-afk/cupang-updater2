@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#install" class="md-skip">
+        <a href="#documentation" class="md-skip">
           Skip to content
         </a>
       
@@ -303,6 +303,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install" class="md-nav__link">
     <span class="md-ellipsis">
       Install
@@ -342,6 +351,15 @@
   <a href="#license" class="md-nav__link">
     <span class="md-ellipsis">
       License
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      TODO
     </span>
   </a>
   
@@ -1692,6 +1710,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#install" class="md-nav__link">
     <span class="md-ellipsis">
       Install
@@ -1736,6 +1763,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#todo" class="md-nav__link">
+    <span class="md-ellipsis">
+      TODO
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1753,18 +1789,17 @@
 
   <h1>README</h1>
 
-<p>A Minecraft plugin downloader</p>
+<p>A Minecraft Server/Plugin Updater</p>
+<p>This is a rewrite of <a href="https://github.com/cupang-afk/cupang-updater">cupang-updater</a> with a focus on making it easier to implement new features.</p>
+<h3 id="documentation">Documentation</h3>
+<p>The documentation for this project can be found <a href="https://cupang-afk.github.io/cupang-updater2">here</a>.</p>
 <h3 id="install">Install</h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cupang</span><span class="o">-</span><span class="n">afk</span><span class="o">/</span><span class="n">cupang</span><span class="o">-</span><span class="n">updater</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">cupang</span><span class="o">-</span><span class="n">afk</span><span class="o">/</span><span class="n">cupang</span><span class="o">-</span><span class="n">updater2</span><span class="o">.</span><span class="n">git</span><span class="c1">#egg=cupang-updater</span>
 </span></code></pre></div>
 <h3 id="usage">Usage</h3>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>cupang-updater
 </span></code></pre></div>
-<p>The first run will create a <code>cupang-updater</code> directory in your current<br />
-working directory, which contains a <code>config.yaml</code> file that serves as the<br />
-configuration for each updater. You can change the location of the<br />
-configuration directory or the configuration file itself using the<br />
-<code>--config-dir</code> and <code>--config</code> options, respectively.</p>
+<p>Running for the first time creates a <code>cupang-updater</code> directory with a <code>config.yaml</code> file for configuration. Use <code>--config-dir</code> and <code>--config</code> to change their locations.</p>
 <h3 id="custom-updater">Custom Updater</h3>
 <p>To create a custom updater, implement a new class that extends <code>PluginUpdater</code> or <code>ServerUpdater</code> and register it using <code>plugin_updater_register</code> or <code>server_updater_register</code>.</p>
 <p>Here is an example of a custom plugin updater:</p>
@@ -1780,7 +1815,7 @@ configuration directory or the configuration file itself using the<br />
 </span></code></pre></div>
 <p>Place your custom updater script in <code>cupang-updater/ext_updater</code> as a <code>.py</code> file, and it will be automatically detected.</p>
 <details>
-<summary>example `hangar.py`</summary>
+<summary>example hangar.py</summary>
 
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span> <span class="nn">json</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
@@ -1936,7 +1971,11 @@ configuration directory or the configuration file itself using the<br />
 <h3 id="contributing">Contributing</h3>
 <p>Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub. </p>
 <h3 id="license">License</h3>
-<p>This project is licensed under the GNU General Public License. See the <code>LICENSE</code> file for more information.</p>
+<p>This project is licensed under the GNU General Public License version 3. See the <code>LICENSE</code> file for more information.</p>
+<h3 id="todo">TODO</h3>
+<ul class="task-list">
+<li class="task-list-item"><input type="checkbox" disabled/> Update documentation</li>
+</ul>
 
 
 

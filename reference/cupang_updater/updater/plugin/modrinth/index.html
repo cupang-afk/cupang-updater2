@@ -2458,8 +2458,7 @@
 <span class="normal"><a href="#__codelineno-0-188">188</a></span>
 <span class="normal"><a href="#__codelineno-0-189">189</a></span>
 <span class="normal"><a href="#__codelineno-0-190">190</a></span>
-<span class="normal"><a href="#__codelineno-0-191">191</a></span>
-<span class="normal"><a href="#__codelineno-0-192">192</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="k">def</span> <span class="nf">get_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-191">191</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="k">def</span> <span class="nf">get_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span id="__span-0-137"><a id="__codelineno-0-137" name="__codelineno-0-137"></a>    <span class="n">project_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">updater_config</span><span class="o">.</span><span class="n">plugin_config</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
 </span><span id="__span-0-138"><a id="__codelineno-0-138" name="__codelineno-0-138"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">project_id</span><span class="p">:</span>
 </span><span id="__span-0-139"><a id="__codelineno-0-139" name="__codelineno-0-139"></a>        <span class="k">return</span>
@@ -2511,11 +2510,10 @@
 </span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a>
 </span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186"></a>    <span class="n">plugin_data</span> <span class="o">=</span> <span class="n">CommonData</span><span class="p">(</span>
 </span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187"></a>        <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a>        <span class="n">version</span><span class="o">=</span><span class="n">remote_version</span><span class="p">,</span>
-</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a>        <span class="n">hashes</span><span class="o">=</span><span class="n">Hashes</span><span class="p">(),</span>
-</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a>    <span class="p">)</span>
-</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a>    <span class="n">plugin_data</span><span class="o">.</span><span class="n">set_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-</span><span id="__span-0-192"><a id="__codelineno-0-192" name="__codelineno-0-192"></a>    <span class="k">return</span> <span class="n">plugin_data</span>
+</span><span id="__span-0-188"><a id="__codelineno-0-188" name="__codelineno-0-188"></a>        <span class="n">version</span><span class="o">=</span><span class="n">remote_version</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-0-189"><a id="__codelineno-0-189" name="__codelineno-0-189"></a>    <span class="p">)</span>
+</span><span id="__span-0-190"><a id="__codelineno-0-190" name="__codelineno-0-190"></a>    <span class="n">plugin_data</span><span class="o">.</span><span class="n">set_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</span><span id="__span-0-191"><a id="__codelineno-0-191" name="__codelineno-0-191"></a>    <span class="k">return</span> <span class="n">plugin_data</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
