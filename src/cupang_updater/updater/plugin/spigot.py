@@ -2,7 +2,7 @@ import json
 
 import strictyaml as sy
 
-from ..base import CommonData, Hashes
+from ..base import CommonData
 from .base import PluginUpdater, PluginUpdaterConfig, PluginUpdaterConfigSchema
 
 
@@ -91,11 +91,9 @@ class SpigotUpdater(PluginUpdater):
                 )
                 return
 
-        self.plugin_data.version = remote_version
         plugin_data = CommonData(
             name=self.plugin_data.name,
-            version=remote_version,
-            hashes=Hashes(),
+            version=remote_version or "",
         )
         plugin_data.set_url(url)
         return plugin_data

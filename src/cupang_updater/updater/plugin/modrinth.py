@@ -5,7 +5,7 @@ import re
 import strictyaml as sy
 
 from ...utils.date import parse_date_string
-from ..base import CommonData, Hashes
+from ..base import CommonData
 from .base import PluginUpdater, PluginUpdaterConfig, PluginUpdaterConfigSchema
 
 
@@ -185,8 +185,7 @@ class ModrinthUpdater(PluginUpdater):
 
         plugin_data = CommonData(
             name=self.plugin_data.name,
-            version=remote_version,
-            hashes=Hashes(),
+            version=remote_version or "",
         )
         plugin_data.set_url(url)
         return plugin_data

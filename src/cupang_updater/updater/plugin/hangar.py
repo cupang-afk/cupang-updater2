@@ -132,7 +132,7 @@ class HangarUpdater(PluginUpdater):
 
         plugin_data = CommonData(
             name=self.plugin_data.name,
-            version=remote_version,
+            version=remote_version or "",
         )
         plugin_data.set_url(url)
         return plugin_data

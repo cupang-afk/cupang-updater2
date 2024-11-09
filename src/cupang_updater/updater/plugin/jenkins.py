@@ -82,9 +82,6 @@ class JenkinsUpdater(PluginUpdater):
                 return
 
         self.new_updater_config.plugin_config["build_number"] = remote_build_number
-        plugin_data = CommonData(
-            name=self.plugin_data.name,
-            version="",
-        )
+        plugin_data = CommonData(name=self.plugin_data.name, version="")
         plugin_data.set_url(url)
         return plugin_data
