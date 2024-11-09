@@ -77,7 +77,7 @@ def main():
                 config.set("settings.server_folder", server_folder.as_posix())
                 break
             log.error("Invalid server folder, is folder exists?")
-    if config.get("settings.update_order").data is None:
+    if not config.get("settings.update_order").data:
         config.set("settings.update_order", list(get_plugin_updaters().keys()))
     else:
         update_order = config.get("settings.update_order").data
