@@ -37,4 +37,5 @@ docs = [
     "mkdocs-literate-nav>=0.6.1",
     "mkdocs-section-index>=0.3.9",
     "mkdocs-callouts>=1.14.0",
+    "black>=24.10.0",
 ]

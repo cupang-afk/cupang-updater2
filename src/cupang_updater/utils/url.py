@@ -73,7 +73,7 @@ def make_requests(
     return res
 
 
-def check_content_type(res: HTTPResponse, content_type: str):
+def check_content_type(res: HTTPResponse, content_type: str) -> bool:
     """
     Check if the given HTTPResponse has the given content type.
 

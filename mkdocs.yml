@@ -1,4 +1,6 @@
 site_name: Cupang Updater
+repo_name: cupang-afk/cupang-updater
+repo_url: https://github.com/cupang-afk/cupang-updater2
 plugins:
   - search
   - autorefs
@@ -51,12 +53,14 @@ theme:
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
+      primary: black
       toggle:
         icon: material/brightness-auto
         name: Switch to light mode
 
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
+      primary: black
       scheme: default
       toggle:
         icon: material/brightness-7
@@ -64,6 +68,7 @@ theme:
 
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
+      primary: black
       scheme: slate
       toggle:
         icon: material/brightness-4

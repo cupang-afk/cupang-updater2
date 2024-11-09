@@ -38,7 +38,7 @@ def reindent(text: str, size: int, ch: str = " ") -> str:
     return textwrap.indent(textwrap.dedent(text), ch * size)
 
 
-def parse_version(version: str):
+def parse_version(version: str) -> Version:
     """
     Parse a given version string into a valid version number.
 
@@ -46,7 +46,7 @@ def parse_version(version: str):
         version (str): Input version string.
 
     Returns:
-        packaging.version.Version: Parsed version number.
+        Version: Parsed version number.
 
     Notes:
         If the version string is invalid, it will be matched against a regex to

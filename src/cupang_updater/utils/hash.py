@@ -1,6 +1,6 @@
 import hashlib
 from pathlib import Path
-from typing import BinaryIO
+from typing import BinaryIO, Self
 
 from .common import ensure_path
 
@@ -13,7 +13,7 @@ class FileHash:
         self._hashes: dict[str, str] = {}
 
     @classmethod
-    def new_file(cls, file: Path | str, known_hashes: dict[str, str] = None):
+    def new_file(cls, file: Path | str, known_hashes: dict[str, str] = None) -> Self:
         """
         Create a new FileHash instance for the given file
 

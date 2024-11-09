@@ -1,4 +1,5 @@
 from threading import Lock
+from typing import Callable
 
 from cupang_downloader import DownloadJob
 from rich.progress import Progress, TaskID, TransferSpeedColumn
@@ -133,12 +134,12 @@ def _on_error(j: DownloadJob, err):
     _remove_bar(k)
 
 
-def get_callbacks():
+def get_callbacks() -> dict[str, Callable]:
     """
     Retrieve a dictionary of callback functions for download events.
 
     Returns:
-        dict: A dictionary containing callback functions for various
+        dict[str, Callable]: A dictionary containing callback functions for various
             download events, including start, finish, progress,
             cancel, and error.
     """
