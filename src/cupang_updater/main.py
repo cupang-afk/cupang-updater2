@@ -65,7 +65,7 @@ def main():
     ext_register(appdir.ext_updater_path)
 
     log = get_logger()
-    log.info("Load config")
+    log.info("Loading config")
     config = Config()
     config.load(appdir.config_path)
     if not config.get("settings.server_folder").data:
