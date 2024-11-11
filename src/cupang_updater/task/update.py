@@ -1,5 +1,4 @@
 import argparse
-import shutil
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
 from copy import deepcopy
@@ -9,7 +8,6 @@ from typing import Any
 
 import strictyaml as sy
 from cupang_downloader.downloader import DownloadJob
-from rich.status import Status
 
 from ..config.config import Config
 from ..downloader.downloader import get_downloader
@@ -24,15 +22,8 @@ from ..updater.plugin.base import PluginUpdater, PluginUpdaterConfig
 from ..updater.server.base import ServerUpdater, ServerUpdaterConfig
 from ..utils.date import parse_date_datetime
 from ..utils.hash import FileHash
-from ..utils.jar import get_jar_info
-
-
-def status_update(status: Status, msg: str, level: str = "info", no_log: bool = False):
-    status.update(msg)
-    if no_log:
-        return
-    log = get_logger()
-    getattr(log, level, getattr(log, "info"))(msg)
+from ..utils.jar import get_jar_info, jar_rename
+from ..utils.rich import status_update
 
 
 def _handle_server_update(
@@ -162,14 +153,7 @@ def _handle_plugin_update(
         if not update_data:
             continue
 
-        # generate a new filename for the plugin by appending the updater name and version
-        # if no version is provided, read it from the jar file after downloaded
-        new_plugin_file_name = (
-            f"{plugin_name} "
-            + f"[{updater.get_updater_name()}] "
-            + f"[{update_data.version or 'Latest'}].jar"
-        )
-        new_plugin_file = plugin_file.with_name(new_plugin_file_name)
+        new_plugin_file = plugin_file.with_name(f"{plugin_name} [Latest].jar")
 
         is_dl_error = False
 
@@ -183,6 +167,7 @@ def _handle_plugin_update(
                 update_data.url,
                 new_plugin_file,
                 update_data.download_headers,
+                plugin_name,
             ),
             on_start=dl_callbacks["on_start"],
             on_finish=dl_callbacks["on_finish"],
@@ -194,25 +179,14 @@ def _handle_plugin_update(
             return
 
         plugin_file.unlink(missing_ok=True)
-        if not update_data.version:
-            # Read the version from the jar file
-            # and generate a new name again
-            jar_info = get_jar_info(new_plugin_file)
-            update_data.version = jar_info.version
-            new_plugin_file_name = (
-                f"{plugin_name} "
-                + f"[{updater.get_updater_name()}] "
-                + f"[{update_data.version or 'Latest'}].jar"
-            )
-            shutil.move(
-                new_plugin_file.absolute(),
-                new_plugin_file.with_name(new_plugin_file_name).absolute(),
-            )
-            new_plugin_file = new_plugin_file.with_name(new_plugin_file_name)
+
+        jar_info = get_jar_info(new_plugin_file)
+        update_data.version = jar_info.version
+        new_plugin_file = jar_rename(new_plugin_file, jar_info)
 
         plugin_hash = FileHash.new_file(new_plugin_file)
         plugin_meta_update = {
-            "file": new_plugin_file_name,
+            "file": new_plugin_file.name,
             "version": update_data.version,
             "hashes": {
                 "md5": plugin_hash.md5,

@@ -3,7 +3,6 @@ from io import StringIO
 from pathlib import Path
 
 import strictyaml as sy
-from rich.status import Status
 
 from ..config.config import Config
 from ..logger.logger import get_logger
@@ -12,15 +11,8 @@ from ..rich import get_rich_status
 from ..utils.common import reindent
 from ..utils.config import fix_config
 from ..utils.hash import FileHash
-from ..utils.jar import get_jar_info
-
-
-def status_update(status: Status, msg: str, level: str = "info", no_log: bool = False):
-    status.update(msg)
-    if no_log:
-        return
-    log = get_logger()
-    getattr(log, level, getattr(log, "info"))(msg)
+from ..utils.jar import get_jar_info, jar_rename
+from ..utils.rich import status_update
 
 
 def scan_plugins(config: Config) -> None:
@@ -75,6 +67,13 @@ def scan_plugins(config: Config) -> None:
                 "Could not check plugins because plugins folder is not exist :shrug:"
             )
             raise FileNotFoundError
+
+        for jar in plugins_folder.glob("*.jar"):
+            jar_info = get_jar_info(jar)
+            if jar.name == f"{jar_info.name} [{jar_info.version}].jar":
+                continue
+            new_jar = jar_rename(jar, jar_info)
+            log.info(f"[green]Renaming [cyan]{jar.name} [green]-> [cyan]{new_jar.name}")
 
         for jar in plugins_folder.glob("*.jar"):
             file_hash = FileHash(jar)
