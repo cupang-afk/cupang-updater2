@@ -1,13 +1,13 @@
 import strictyaml as sy
 
-from ..base import CommonData
+from ..base import DownloadInfo, ResourceData
 from ..common_api.jenkins import JenkinsAPI
 from .base import PluginUpdater, PluginUpdaterConfig, PluginUpdaterConfigSchema
 
 
 class JenkinsUpdater(PluginUpdater):
-    def __init__(self, plugin_data: CommonData, updater_config: PluginUpdaterConfig):
-        self.new_updater_config = updater_config.copy()
+    def __init__(self, plugin_data: ResourceData, updater_config: PluginUpdaterConfig):
+        self.new_updater_config = PluginUpdaterConfig()
         super().__init__(plugin_data, updater_config)
 
     @staticmethod
@@ -45,7 +45,7 @@ class JenkinsUpdater(PluginUpdater):
     def get_config_update(self) -> PluginUpdaterConfig:
         return self.new_updater_config
 
-    def get_update(self):
+    def get_update(self) -> DownloadInfo | None:
         jenkins_url = self.updater_config.plugin_config.get("url")
         if not jenkins_url:
             return
@@ -82,6 +82,4 @@ class JenkinsUpdater(PluginUpdater):
                 return
 
         self.new_updater_config.plugin_config["build_number"] = remote_build_number
-        plugin_data = CommonData(name=self.plugin_data.name, version="")
-        plugin_data.set_url(url)
-        return plugin_data
+        return DownloadInfo(url)

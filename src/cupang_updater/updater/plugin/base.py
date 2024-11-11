@@ -6,7 +6,7 @@ from typing import Any
 from strictyaml.validators import MapValidator
 
 from ...utils.common import reindent
-from ..base import CommonData, UpdaterBase
+from ..base import ResourceData, UpdaterBase
 
 
 @dataclass
@@ -65,20 +65,23 @@ class PluginUpdater(UpdaterBase):
     Abstract base class for updating plugins.
 
     Subclasses must implement the following abstract methods:
-        - get_config_schema: Get the configuration schema for the plugin updater.
-        - get_update: Get the latest update information for the plugin.
+        - get_config_schema: Retrieve the configuration schema for the plugin updater.
+        - get_update: Retrieve the latest update information for the plugin.
 
     Optional methods to implement:
-        - get_config_update: Get the updated configuration for the plugin updater.
+        - get_config_update: Retrieve the updated configuration for the plugin updater.
+
+    Note:
+        See UpdaterBase class for inherited functionality.
     """
 
-    def __init__(self, plugin_data: CommonData, updater_config: PluginUpdaterConfig):
+    def __init__(self, plugin_data: ResourceData, updater_config: PluginUpdaterConfig):
         """
         Initialize the plugin updater.
 
         Args:
-            plugin_data (CommonData): The information about the plugin to update.
-            updater_config (PluginUpdaterConfig): The configuration for the plugin updater.
+            plugin_data (ResourceData): Information about the plugin to update.
+            updater_config (PluginUpdaterConfig): Configuration for the plugin updater.
         """
         self.plugin_data = plugin_data
         self.updater_config = updater_config
@@ -88,31 +91,18 @@ class PluginUpdater(UpdaterBase):
     @abstractmethod
     def get_config_schema() -> PluginUpdaterConfigSchema:
         """
-        Get the configuration schema for the plugin updater.
+        Retrieve the configuration schema for the plugin updater.
 
         Returns:
-            PluginUpdaterConfigSchema: The schema for the plugin updater configuration.
+            PluginUpdaterConfigSchema: The configuration schema for the plugin updater.
         """
         ...
 
     def get_config_update(self) -> PluginUpdaterConfig:
         """
-        Get the updated configuration for the plugin updater.
+        Retrieve the updated configuration for the plugin updater.
 
         Returns:
-            PluginUpdaterConfig: The default configuration for the plugin updater.
+            PluginUpdaterConfig: The updated configuration for the plugin updater.
         """
         return PluginUpdaterConfig()
-
-    @abstractmethod
-    def get_update(self) -> CommonData | None:
-        """
-        Get the latest update information for the plugin.
-
-        Returns:
-            - CommonData | None: The latest plugin data, or None if an error occurred.
-
-        Note:
-            ensure the returned CommonData has the URL set using .set_url()
-        """
-        ...

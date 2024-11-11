@@ -5,11 +5,12 @@ import strictyaml as sy
 from ..config.default import default_plugin
 from ..config.schema import get_plugin_schema, get_plugin_updater_settings_schema
 from ..logger.logger import get_logger
-from ..updater.base import CommonData
+from ..updater.base import ResourceData
 from ..updater.plugin.base import PluginUpdater, PluginUpdaterConfig
 from ..utils.common import reindent
+from ..utils.hash import FileHash
 
-_dummy = (CommonData("", ""), PluginUpdaterConfig())
+_dummy = (ResourceData("", "", FileHash.dummy()), PluginUpdaterConfig())
 _plugin_updater_settings_schema = get_plugin_updater_settings_schema()
 _plugin_schema = get_plugin_schema()
 _default = {

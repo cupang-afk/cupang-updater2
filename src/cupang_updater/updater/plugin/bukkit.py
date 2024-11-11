@@ -4,12 +4,12 @@ import re
 import strictyaml as sy
 
 from ...utils.date import parse_date_timestamp
-from ..base import CommonData
+from ..base import DownloadInfo, ResourceData
 from .base import PluginUpdater, PluginUpdaterConfig, PluginUpdaterConfigSchema
 
 
 class BukkitUpdater(PluginUpdater):
-    def __init__(self, plugin_data: CommonData, updater_config: PluginUpdaterConfig):
+    def __init__(self, plugin_data: ResourceData, updater_config: PluginUpdaterConfig):
         self.api = "https://api.curseforge.com/servermods"
         self.date_regex = re.compile(r"/Date\((\d+)\)/")
         super().__init__(plugin_data, updater_config)
@@ -69,7 +69,7 @@ class BukkitUpdater(PluginUpdater):
         # Return the latest version
         return sorted_list_project_data[0]
 
-    def get_update(self) -> CommonData | None:
+    def get_update(self) -> DownloadInfo | None:
         project_id = self.updater_config.plugin_config["project_id"]
         if not project_id:
             return
@@ -99,6 +99,4 @@ class BukkitUpdater(PluginUpdater):
                 )
                 return
 
-        plugin_data = CommonData(name=self.plugin_data.name, version="")
-        plugin_data.set_url(url)
-        return plugin_data
+        return DownloadInfo(url)

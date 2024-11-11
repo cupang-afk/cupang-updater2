@@ -1,6 +1,6 @@
 import strictyaml as sy
 
-from ..base import CommonData
+from ..base import DownloadInfo, ResourceData
 from ..common_api.github import GithubAPI
 from .base import PluginUpdater, PluginUpdaterConfig, PluginUpdaterConfigSchema
 
@@ -16,9 +16,9 @@ class CompareToType(sy.Str):
 
 
 class GithubUpdater(PluginUpdater):
-    def __init__(self, plugin_data: CommonData, updater_config: PluginUpdaterConfig):
+    def __init__(self, plugin_data: ResourceData, updater_config: PluginUpdaterConfig):
         self.token = updater_config.common_config.get("token")
-        self.new_updater_config = updater_config.copy()
+        self.new_updater_config = PluginUpdaterConfig()
         super().__init__(plugin_data, updater_config)
 
     @staticmethod
@@ -66,7 +66,7 @@ class GithubUpdater(PluginUpdater):
     def get_config_update(self) -> PluginUpdaterConfig:
         return self.new_updater_config
 
-    def get_update(self) -> CommonData | None:
+    def get_update(self) -> DownloadInfo | None:
         repo = self.updater_config.plugin_config.get("repo")
         if not repo:
             return
@@ -84,7 +84,6 @@ class GithubUpdater(PluginUpdater):
         api = GithubAPI(repo, prerelease, self.token)
 
         commit = ""
-        version = ""
         if compare_to == "commit":
             local_commit = self.updater_config.plugin_config.get("commit")
             remote_commit = api.get_commit()
@@ -104,7 +103,6 @@ class GithubUpdater(PluginUpdater):
                     remote_version = self.parse_version("1.0")
             if local_version >= remote_version:
                 return
-            version = str(remote_version)
 
         url = api.get_asset_url(name_regex)
         if not url:
@@ -125,12 +123,4 @@ class GithubUpdater(PluginUpdater):
                 return
 
         self.new_updater_config.plugin_config["commit"] = commit
-        plugin_data = CommonData(
-            name=self.plugin_data.name,
-            version=version,
-            download_headers={"Authorization": f"Bearer {self.token}"}
-            if self.token
-            else None,
-        )
-        plugin_data.set_url(url)
-        return plugin_data
+        return DownloadInfo(url, {"Authorization": f"Bearer {self.token}"})

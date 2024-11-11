@@ -1,6 +1,6 @@
 import strictyaml as sy
 
-from ..base import CommonData
+from ..base import DownloadInfo
 from .base import PluginUpdater, PluginUpdaterConfigSchema
 
 
@@ -27,7 +27,7 @@ class CustomUrlPluginUpdater(PluginUpdater):
             """,
         )
 
-    def get_update(self) -> CommonData | None:
+    def get_update(self) -> DownloadInfo | None:
         url = self.updater_config.plugin_config["url"]
         if not url:
             return
@@ -46,6 +46,4 @@ class CustomUrlPluginUpdater(PluginUpdater):
                 )
                 return
 
-        plugin_data = CommonData(name=self.plugin_data.name, version="")
-        plugin_data.set_url(url)
-        return plugin_data
+        return DownloadInfo(url)

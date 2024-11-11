@@ -1,13 +1,13 @@
 import json
 
-from ..base import CommonData
-from .base import ServerUpdater, ServerUpdaterConfigSchema
+from ..base import DownloadInfo, ResourceData
+from .base import ServerUpdater, ServerUpdaterConfig, ServerUpdaterConfigSchema
 
 
 class PaperUpdater(ServerUpdater):
-    def __init__(self, server_data, updater_config):
+    def __init__(self, server_data: ResourceData, updater_config: ServerUpdaterConfig):
         self.api = "https://api.papermc.io/v2/projects"
-        self.new_updater_config = updater_config
+        self.new_updater_config = ServerUpdaterConfig()
         super().__init__(server_data, updater_config)
 
     @staticmethod
@@ -47,7 +47,7 @@ class PaperUpdater(ServerUpdater):
         latest_build_data = sorted_build_data[max(sorted_build_data.keys())]
         return latest_build_data
 
-    def get_update(self):
+    def get_update(self) -> DownloadInfo | None:
         server_type = self.updater_config.server_config["type"]
         server_version = self.updater_config.server_config["version"]
         update_data = self._get_update_data(
@@ -89,6 +89,4 @@ class PaperUpdater(ServerUpdater):
                 return
 
         self.new_updater_config.server_config["build_number"] = update_data["build"]
-        server_data = CommonData(self.get_updater_name(), "")
-        server_data.set_url(url)
-        return server_data
+        return DownloadInfo(url)

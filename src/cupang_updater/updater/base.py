@@ -1,56 +1,50 @@
 import logging
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, final
+from typing import final
 
 from ..logger.logger import get_logger
 from ..meta import default_headers
 from ..utils.common import parse_version
+from ..utils.hash import FileHash, Hashes
 from ..utils.url import check_content_type, make_requests, make_url
 
 
 @dataclass
-class Hashes:
+class ResourceData:
     """
+    Represents the data associated with a resource, such as a plugin or server.
+
     Attributes:
-        md5 (str): The MD5 hash of the file.
-        sha1 (str): The SHA-1 hash of the file.
-        sha256 (str): The SHA-256 hash of the file.
-        sha512 (str): The SHA-512 hash of the file.
-    """
-
-    md5: str = field(default=None)
-    sha1: str = field(default=None)
-    sha256: str = field(default=None)
-    sha512: str = field(default=None)
-
-
-@dataclass
-class CommonData:
-    """
-    Attributes:
-        name (str): The name of the file.
-        version (str): The version of the file.
-        hashes (Hashes): The hashes of the file.
-        download_headers (dict[str, str]): The headers to use when downloading the file.
-        extra (dict[str, Any]): Additional information about the file.
-        url (str): The URL of the file.
+        name (str): The name of the plugin or server type.
+        version (str): The version of the resource.
+        hashes (FileHash | Hashes): The hash values associated with the resource.
     """
 
     name: str
     version: str
-    hashes: Hashes = field(default_factory=Hashes)
-    download_headers: dict[str, str] = field(default=None)
-    extra: dict[str, Any] = field(default=None)
-    url: str = field(init=False)
+    hashes: FileHash | Hashes = field(default_factory=Hashes)
+
+
+@dataclass
+class DownloadInfo:
+    """
+    Represents the information required to download a file, including
+    the URL of the file and any additional HTTP headers to send with the request.
+
+    Attributes:
+        url (str): The URL of the file.
+        headers (dict[str, str], optional): Additional HTTP headers to send with the request.
+    """
+
+    url: str
+    headers: dict[str, str] = field(default=None)
 
     def __post_init__(self):
-        if self.download_headers:
-            self.download_headers = {**self.download_headers, **default_headers}
-        self.extra = self.extra or {}
-
-    def set_url(self, url: str) -> "CommonData":
-        self.url = url
+        if self.headers:
+            self.headers = {**self.headers, **default_headers}
+        else:
+            self.headers = default_headers.copy()
 
 
 class UpdaterBase(metaclass=ABCMeta):
@@ -58,13 +52,19 @@ class UpdaterBase(metaclass=ABCMeta):
     Abstract base class for all updaters.
 
     This class provides common methods and properties for all updaters.
+
+    Subclasses must implement the following abstract methods:
+        - get_updater_name: Get the name of the updater.
+        - get_updater_version: Get the version of the updater.
+        - get_config_path: Get the path to the configuration file for this updater.
+        - get_update: Get the latest update information for the plugin/server.
     """
 
     @staticmethod
     @abstractmethod
     def get_updater_name() -> str:
         """
-        Get the name of the updater.
+        Retrieve the name of the updater.
 
         Returns:
             str: The name of the updater.
@@ -75,7 +75,7 @@ class UpdaterBase(metaclass=ABCMeta):
     @abstractmethod
     def get_updater_version() -> str:
         """
-        Get the version of the updater.
+        Retrieve the version of the updater.
 
         Returns:
             str: The version of the updater.
@@ -86,10 +86,20 @@ class UpdaterBase(metaclass=ABCMeta):
     @abstractmethod
     def get_config_path() -> str:
         """
-        Get the path to the configuration file for this updater.
+        Retrieve the config key for the config section.
 
         Returns:
-            str: The path to the configuration file.
+            str: The config key to the config section.
+        """
+        ...
+
+    @abstractmethod
+    def get_update(self) -> DownloadInfo | None:
+        """
+        Retrieve the latest update information for the plugin/server.
+
+        Returns:
+            DownloadInfo | None: The latest update information, or None if update is not available or an error occurred.
         """
         ...
 
@@ -97,8 +107,10 @@ class UpdaterBase(metaclass=ABCMeta):
     @property
     def log(self) -> logging.Logger:
         """
+        Retrieve the logger instance for this updater.
+
         Returns:
-            logging.Logger: The logger for this Updater instance.
+            logging.Logger: The logger instance.
         """
         if not hasattr(self, "_logger"):
             self._logger = get_logger().getChild(self.get_updater_name())

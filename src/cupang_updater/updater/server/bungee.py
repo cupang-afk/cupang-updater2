@@ -1,12 +1,12 @@
-from ..base import CommonData
+from ..base import DownloadInfo, ResourceData
 from ..common_api.jenkins import JenkinsAPI
 from .base import ServerUpdater, ServerUpdaterConfig, ServerUpdaterConfigSchema
 
 
 class BungeeUpdater(ServerUpdater):
-    def __init__(self, server_data: CommonData, updater_config: ServerUpdaterConfig):
+    def __init__(self, server_data: ResourceData, updater_config: ServerUpdaterConfig):
         self.api = "https://ci.md-5.net/job/Bungeecord"
-        self.new_updater_config = updater_config.copy()
+        self.new_updater_config = ServerUpdaterConfig()
         super().__init__(server_data, updater_config)
 
     @staticmethod
@@ -32,7 +32,7 @@ class BungeeUpdater(ServerUpdater):
     def get_config_update(self):
         return self.new_updater_config
 
-    def get_update(self) -> CommonData | None:
+    def get_update(self) -> DownloadInfo | None:
         self.log.info(
             f'Using {self.get_updater_name()} updater will ignore "version" (if set)'
         )
@@ -62,7 +62,4 @@ class BungeeUpdater(ServerUpdater):
                 return
 
         self.new_updater_config.server_config["build_number"] = remote_build_number
-
-        server_data = CommonData(name=self.get_updater_name(), version="")
-        server_data.set_url(url)
-        return server_data
+        return DownloadInfo(url)

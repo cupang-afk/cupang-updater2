@@ -109,6 +109,15 @@ def get_jar_info(jar_path: str | Path) -> JarInfo:
 
 
 def jar_rename(jar_path: str | Path, jar_info: JarInfo = None) -> Path:
+    """Rename a given jar file based on its extracted metadata.
+
+    Args:
+        jar_path (str | Path): Path to the jar file.
+        jar_info (JarInfo): Metadata of the jar file.
+
+    Returns:
+        Path: The new path of the renamed jar file.
+    """
     jar_path = ensure_path(jar_path)
     if not jar_info:
         jar_info = get_jar_info(jar_path)

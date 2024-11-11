@@ -4,7 +4,6 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from copy import deepcopy
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
 
 import strictyaml as sy
 from cupang_downloader.downloader import DownloadJob
@@ -17,7 +16,7 @@ from ..manager.plugin import get_plugin_updater
 from ..manager.server import get_server_updaters
 from ..meta import stop_event
 from ..rich import get_rich_live, get_rich_status
-from ..updater.base import CommonData, Hashes
+from ..updater.base import Hashes, ResourceData
 from ..updater.plugin.base import PluginUpdater, PluginUpdaterConfig
 from ..updater.server.base import ServerUpdater, ServerUpdaterConfig
 from ..utils.date import parse_date_datetime
@@ -31,35 +30,39 @@ def _handle_server_update(
     server_folder: Path,
     server_data: dict,
     server_common: dict = None,
-) -> tuple[FileHash, ServerUpdaterConfig | None] | None:
+) -> tuple[str, ResourceData, ServerUpdaterConfig | None] | None:
     log = get_logger()
     server_file: Path = server_folder / server_data["file"]
     server_type: str = server_data["type"]
     server_version: str = server_data["version"]
-    server_hash = FileHash.new_file(
-        server_file,
-        server_data["hashes"]
-        if server_file.exists()
-        else dict(md5="a", sha1="b", sha256="c", sha512="d"),
+    server_data["build_number"] = (
+        0 if not server_file.exists() else server_data["build_number"]
     )
-    if not server_file.exists():
-        server_data["build_number"] = 0
+
+    if server_file.exists():
+        if server_data["hashes"]["md5"]:
+            server_hash = FileHash.with_known_hashes(
+                server_file,
+                Hashes(**server_data["hashes"]),
+            )
+        else:
+            server_hash = FileHash(server_file)
+    else:
+        server_hash = FileHash.with_known_hashes(
+            server_file, Hashes("a", "b", "c", "d")
+        )
 
     dl_callbacks = get_callbacks()
+    resource_data = ResourceData(
+        f"{server_type} ({server_file.name})",
+        server_version,
+        server_hash._hashes,
+    )
     for updater in updater_list:
         if stop_event.is_set():
             break
         updater = updater(
-            CommonData(
-                f"{server_type} ({server_file.name})",
-                server_version,
-                Hashes(
-                    md5=server_hash.md5,
-                    sha1=server_hash.sha1,
-                    sha256=server_hash.sha256,
-                    sha512=server_hash.sha512,
-                ),
-            ),
+            resource_data,
             # Perform a deepcopy to prevent changes to the original configuration
             # server_data is passed directly (refer to server: fields in config.yaml)
             ServerUpdaterConfig(
@@ -88,7 +91,7 @@ def _handle_server_update(
             DownloadJob(
                 update_data.url,
                 server_file,
-                update_data.download_headers,
+                update_data.headers,
                 server_type,
             ),
             on_start=dl_callbacks["on_start"],
@@ -100,12 +103,7 @@ def _handle_server_update(
         if is_dl_error:
             return
 
-        # write the config update from the server updater with the updater config_path
-        server_config_update = ServerUpdaterConfig(
-            {updater.get_config_path(): updater.get_config_update().common_config},
-            {updater.get_config_path(): updater.get_config_update().server_config},
-        )
-        return FileHash.new_file(server_file), server_config_update
+        return updater.get_config_path(), resource_data, updater.get_config_update()
 
 
 def _handle_plugin_update(
@@ -114,34 +112,37 @@ def _handle_plugin_update(
     plugin_name: str,
     plugin_data: dict,
     plugin_common: dict = None,
-) -> tuple[str, dict[str, Any], PluginUpdaterConfig] | None:
+) -> tuple[str, Path, ResourceData, PluginUpdaterConfig] | None:
     plugin_file = plugins_folder / str(plugin_data["file"])
     plugin_version = plugin_data["version"]
-    plugin_hash = FileHash.new_file(
-        plugin_file,
-        plugin_data["hashes"]
-        if plugin_file.exists()
-        else dict(md5="a", sha1="b", sha256="c", sha512="d"),
-    )
+
+    if plugin_file.exists():
+        if plugin_data["hashes"]["md5"]:
+            plugin_hash = FileHash.with_known_hashes(
+                plugin_file,
+                Hashes(**plugin_data["hashes"]),
+            )
+        else:
+            plugin_hash = FileHash(plugin_file)
+    else:
+        plugin_hash = FileHash.with_known_hashes(plugin_file, Hashes())
 
     dl_callbacks = get_callbacks()
+    resource_data = ResourceData(
+        plugin_name,
+        plugin_version,
+        plugin_hash._hashes,
+    )
     for updater in updater_list:
         if stop_event.is_set():
             break
         updater = updater(
-            CommonData(
-                plugin_name,
-                plugin_version,
-                Hashes(
-                    md5=plugin_hash.md5,
-                    sha1=plugin_hash.sha1,
-                    sha256=plugin_hash.sha256,
-                    sha512=plugin_hash.sha512,
-                ),
-            ),
+            resource_data,
             PluginUpdaterConfig(
-                common_config=plugin_common.get(updater.get_config_path(), None),
-                plugin_config=plugin_data.get(updater.get_config_path(), None),
+                common_config=deepcopy(
+                    plugin_common.get(updater.get_config_path(), {})
+                ),
+                plugin_config=deepcopy(plugin_data.get(updater.get_config_path(), {})),
             ),
         )
         try:
@@ -166,7 +167,7 @@ def _handle_plugin_update(
             DownloadJob(
                 update_data.url,
                 new_plugin_file,
-                update_data.download_headers,
+                update_data.headers,
                 plugin_name,
             ),
             on_start=dl_callbacks["on_start"],
@@ -179,53 +180,51 @@ def _handle_plugin_update(
             return
 
         plugin_file.unlink(missing_ok=True)
-
         jar_info = get_jar_info(new_plugin_file)
-        update_data.version = jar_info.version
         new_plugin_file = jar_rename(new_plugin_file, jar_info)
+        plugin_hash = FileHash(new_plugin_file)
 
-        plugin_hash = FileHash.new_file(new_plugin_file)
-        plugin_meta_update = {
-            "file": new_plugin_file.name,
-            "version": update_data.version,
-            "hashes": {
-                "md5": plugin_hash.md5,
-                "sha1": plugin_hash.sha1,
-                "sha256": plugin_hash.sha256,
-                "sha512": plugin_hash.sha512,
-            },
-        }
-        plugin_config_update = PluginUpdaterConfig(
-            {updater.get_config_path(): updater.get_config_update().common_config},
-            {updater.get_config_path(): updater.get_config_update().plugin_config},
+        resource_data.version = jar_info.version
+        resource_data.hashes = plugin_hash
+
+        return (
+            updater.get_config_path(),
+            new_plugin_file,
+            resource_data,
+            updater.get_config_update(),
         )
-        return plugin_name, plugin_meta_update, plugin_config_update
 
 
 def _handle_plugin_meta_update(
-    config: Config, plugin_name: str, plugin_meta_update: dict[str, Any]
+    config: Config, plugin_name: str, plugin_file: Path, resource_data: ResourceData
 ):
-    for k, v in plugin_meta_update.items():
-        config.set(f"plugins.{plugin_name}.{k.strip('.')}", v)
+    config_path = f"plugins.{plugin_name}."
+    config.set(config_path + "file", plugin_file.name)
+    config.set(config_path + "version", resource_data.version)
+    config.set(config_path + "hashes.md5", resource_data.hashes.md5)
+    config.set(config_path + "hashes.sha1", resource_data.hashes.sha1)
+    config.set(config_path + "hashes.sha256", resource_data.hashes.sha256)
+    config.set(config_path + "hashes.sha512", resource_data.hashes.sha512)
 
 
 def _handle_plugin_updater_update(
     config: Config,
+    config_path: str,
     plugin_name: str,
     plugin_config_update: PluginUpdaterConfig,
 ):
     if not isinstance(plugin_config_update, PluginUpdaterConfig):
         return
-    for config_path, config_data in plugin_config_update.plugin_config.items():
-        for sub_key, sub_value in config_data.items():
-            config.set(
-                f"plugins.{plugin_name}.{config_path.strip('.')}.{sub_key.strip('.')}",
-                sub_value,
-            )
+    for key, value in plugin_config_update.plugin_config.items():
+        config.set(
+            f"plugins.{plugin_name}.{config_path.strip('.')}.{key.strip('.')}",
+            value,
+        )
 
 
 def _handle_settings_common_update(
     config: Config,
+    config_path: str,
     config_update: ServerUpdaterConfig | PluginUpdaterConfig,
 ):
     if not isinstance(config_update, ServerUpdaterConfig) or isinstance(
@@ -233,12 +232,11 @@ def _handle_settings_common_update(
     ):
         return
     _type = "server" if isinstance(config_update, ServerUpdaterConfig) else "plugin"
-    for config_path, config_data in config_update.common_config.items():
-        for sub_key, sub_value in config_data.items():
-            config.set(
-                f"updater_settings.{_type}.{config_path.strip('.')}.{sub_key.strip('.')}",
-                sub_value,
-            )
+    for key, value in config_update.common_config.items():
+        config.set(
+            f"updater_settings.{_type}.{config_path.strip('.')}.{key.strip('.')}",
+            value,
+        )
 
 
 def update_server(config: Config) -> None:
@@ -258,16 +256,13 @@ def update_server(config: Config) -> None:
                 config.get("updater_settings.server").data,
             )
             if result:
-                server_hash, server_config_update = result
+                config_path, resource_data, server_config_update = result
+                server_hash = resource_data.hashes
 
                 # Updating the server config is somewhat unique, as we only perform updates for build_number and hashes
                 config.set(
                     "server.build_number",
-                    # server_config contains a mapping of {updater_name: updater_config_update}
-                    server_config_update.server_config[
-                        list(server_config_update.server_config.keys())[0]
-                    ].get("build_number", 0)
-                    or 0,
+                    server_config_update.server_config.get("build_number", 0) or 0,
                 )
                 config.set(
                     "server.hashes",
@@ -278,7 +273,9 @@ def update_server(config: Config) -> None:
                         sha512=server_hash.sha512,
                     ),
                 )
-                _handle_settings_common_update(config, server_config_update)
+                _handle_settings_common_update(
+                    config, config_path, server_config_update
+                )
 
             status_update(status, "Finished Updating Server")
 
@@ -345,15 +342,23 @@ def update_plugin(config: Config) -> None:
             for job in jobs:
                 if job.cancelled() or not job.result():
                     continue
-                plugin_name, plugin_meta_update, config_update = job.result()
-
-                log.info(
-                    f"[green]Update config for {plugin_name} [cyan]{plugin_meta_update['file']}"
+                config_path, new_plugin_file, resource_data, plugin_config_update = (
+                    job.result()
                 )
 
-                _handle_plugin_meta_update(config, plugin_name, plugin_meta_update)
-                _handle_plugin_updater_update(config, plugin_name, config_update)
-                _handle_settings_common_update(config, config_update)
+                log.info(
+                    f"[green]Update config for {plugin_name} [cyan]{new_plugin_file.name}"
+                )
+
+                _handle_plugin_meta_update(
+                    config, plugin_name, new_plugin_file, resource_data
+                )
+                _handle_plugin_updater_update(
+                    config, config_path, plugin_name, plugin_config_update
+                )
+                _handle_settings_common_update(
+                    config, config_path, plugin_config_update
+                )
             status_update(status, "Finished updating plugins")
 
 

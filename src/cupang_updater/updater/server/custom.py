@@ -1,4 +1,4 @@
-from ..base import CommonData
+from ..base import DownloadInfo
 from .base import ServerUpdater, ServerUpdaterConfigSchema
 
 
@@ -23,7 +23,7 @@ class CustomUrlServerUpdater(ServerUpdater):
     def get_config_schema():
         return ServerUpdaterConfigSchema()
 
-    def get_update(self) -> CommonData | None:
+    def get_update(self) -> DownloadInfo | None:
         url = self.updater_config.server_config["custom_url"]
         if not url:
             return
@@ -42,9 +42,4 @@ class CustomUrlServerUpdater(ServerUpdater):
                 )
                 return
 
-        server_data = CommonData(
-            name=self.get_updater_name(),
-            version="",
-        )
-        server_data.set_url(url)
-        return server_data
+        return DownloadInfo(url)

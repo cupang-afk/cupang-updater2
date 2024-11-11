@@ -2,7 +2,7 @@ import json
 
 import strictyaml as sy
 
-from ..base import CommonData
+from ..base import DownloadInfo, ResourceData
 from .base import PluginUpdater, PluginUpdaterConfig, PluginUpdaterConfigSchema
 
 
@@ -29,7 +29,7 @@ class Channel(sy.Str):
 
 
 class HangarUpdater(PluginUpdater):
-    def __init__(self, plugin_data: CommonData, updater_config: PluginUpdaterConfig):
+    def __init__(self, plugin_data: ResourceData, updater_config: PluginUpdaterConfig):
         self.api = "https://hangar.papermc.io/api/v1/projects"
         super().__init__(plugin_data, updater_config)
 
@@ -87,7 +87,7 @@ class HangarUpdater(PluginUpdater):
 
         return json.loads(res.read())
 
-    def get_update(self):
+    def get_update(self) -> DownloadInfo | None:
         project_id: str = self.updater_config.plugin_config["id"]
         if not project_id:
             return
@@ -130,9 +130,4 @@ class HangarUpdater(PluginUpdater):
                 )
                 return
 
-        plugin_data = CommonData(
-            name=self.plugin_data.name,
-            version=remote_version or "",
-        )
-        plugin_data.set_url(url)
-        return plugin_data
+        return DownloadInfo(url)

@@ -5,7 +5,7 @@ import re
 import strictyaml as sy
 
 from ...utils.date import parse_date_string
-from ..base import CommonData
+from ..base import DownloadInfo, ResourceData
 from .base import PluginUpdater, PluginUpdaterConfig, PluginUpdaterConfigSchema
 
 
@@ -40,7 +40,7 @@ class ModrinthVersionType(sy.Str):
 
 
 class ModrinthUpdater(PluginUpdater):
-    def __init__(self, plugin_data: CommonData, updater_config: PluginUpdaterConfig):
+    def __init__(self, plugin_data: ResourceData, updater_config: PluginUpdaterConfig):
         self.api = "https://api.modrinth.com/v2"
         super().__init__(plugin_data, updater_config)
 
@@ -133,7 +133,7 @@ class ModrinthUpdater(PluginUpdater):
         # Set update_data to the latest release version
         return date_sorted_project_data[max(date_sorted_project_data.keys())]
 
-    def get_update(self):
+    def get_update(self) -> DownloadInfo | None:
         project_id = self.updater_config.plugin_config["id"]
         if not project_id:
             return
@@ -183,9 +183,4 @@ class ModrinthUpdater(PluginUpdater):
                 )
                 return
 
-        plugin_data = CommonData(
-            name=self.plugin_data.name,
-            version=remote_version or "",
-        )
-        plugin_data.set_url(url)
-        return plugin_data
+        return DownloadInfo(url)

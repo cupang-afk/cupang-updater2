@@ -4,11 +4,12 @@ import strictyaml as sy
 
 from ..config.schema import get_server_schema, get_server_updater_settings_schema
 from ..logger.logger import get_logger
-from ..updater.base import CommonData, Hashes
+from ..updater.base import ResourceData
 from ..updater.server.base import ServerUpdater, ServerUpdaterConfig
 from ..utils.common import reindent
+from ..utils.hash import FileHash
 
-_dummy = (CommonData("", "", Hashes()), ServerUpdaterConfig())
+_dummy = (ResourceData("", "", FileHash.dummy()), ServerUpdaterConfig())
 _server_updater_settings_schema = get_server_updater_settings_schema()
 _server_schema = get_server_schema()
 _default = {

@@ -6,13 +6,13 @@ from typing import Any
 from strictyaml.validators import MapValidator
 
 from ...utils.common import reindent
-from ..base import CommonData, UpdaterBase
+from ..base import ResourceData, UpdaterBase
 
 
 @dataclass
 class ServerUpdaterConfigSchema:
     """
-    The schema for the configuration of a server updater.
+    Defines the schema for the configuration of a server updater.
 
     Attributes:
         common_schema (MapValidator): The schema for the common configuration.
@@ -32,11 +32,11 @@ class ServerUpdaterConfigSchema:
 @dataclass
 class ServerUpdaterConfig:
     """
-    The configuration for a server updater.
+    Configuration for a server updater.
 
     Attributes:
-        common_config (dict[str, Any]): The common configuration for the server updater.
-        server_config (dict[str, Any]): The configuration specific to the server (corresponds to server fields in config.yaml).
+        common_config (dict[str, Any]): Common configuration for the server updater.
+        server_config (dict[str, Any]): Configuration specific to the server (corresponds to server fields in config.yaml).
     """
 
     common_config: dict[str, Any] = field(default=None)
@@ -63,22 +63,24 @@ class ServerUpdater(UpdaterBase):
     Abstract base class for updating servers.
 
     Subclasses must implement the following abstract methods:
-        - get_server_types: Get the list of server types supported by this updater.
-        - get_config_schema: Get the configuration schema for the server updater.
-        - get_config_update: Get the default configuration for the server updater.
-        - get_update: Get the latest update information for the server.
+        - get_server_types: Retrieve the list of server types this updater supports.
+        - get_config_schema: Retrieve the configuration schema for the server updater.
+        - get_update: Retrieve the latest update information for the server.
 
     Optional methods to implement:
-        - get_config_update: Get the updated configuration for the server updater.
+        - get_config_update: Retrieve the updated configuration for the server updater.
+
+    Note:
+        See UpdaterBase class for inherited functionality.
     """
 
-    def __init__(self, server_data: CommonData, updater_config: ServerUpdaterConfig):
+    def __init__(self, server_data: ResourceData, updater_config: ServerUpdaterConfig):
         """
         Initialize the server updater.
 
         Args:
-            server_data (CommonData): The data about the server to update.
-            updater_config (ServerUpdaterConfig): The configuration for the server updater.
+            server_data (ResourceData): Information about the server to be updated.
+            updater_config (ServerUpdaterConfig): Configuration specifics for the server updater.
         """
         self.server_data = server_data
         self.updater_config = updater_config
@@ -88,10 +90,10 @@ class ServerUpdater(UpdaterBase):
     @abstractmethod
     def get_server_types() -> list[str]:
         """
-        Get the list of server types supported by this updater.
+        Retrieve the list of server types this updater supports.
 
         Returns:
-            list[str]: The list of server types supported by this updater.
+            list[str]: Supported server types.
         """
         ...
 
@@ -99,31 +101,18 @@ class ServerUpdater(UpdaterBase):
     @abstractmethod
     def get_config_schema() -> ServerUpdaterConfigSchema:
         """
-        Get the configuration schema for the server updater.
+        Retrieve the configuration schema for the server updater.
 
         Returns:
-            ServerUpdaterConfigSchema: The schema for the server updater configuration.
+            ServerUpdaterConfigSchema: Schema defining server updater configuration.
         """
         ...
 
     def get_config_update(self) -> ServerUpdaterConfig:
         """
-        Get the updated configuration for the server updater.
+        Retrieve the updated configuration for the server updater.
 
         Returns:
-            ServerUpdaterConfig: The default configuration for the server updater.
+            ServerUpdaterConfig: Default configuration for the server updater.
         """
         return ServerUpdaterConfig()
-
-    @abstractmethod
-    def get_update(self) -> CommonData | None:
-        """
-        Get the latest update information for the server.
-
-        Returns:
-            - CommonData | None: The latest server data, or None if an error occurred.
-
-        Note:
-            ensure the returned CommonData has the URL set using .set_url()
-        """
-        ...

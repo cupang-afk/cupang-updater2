@@ -1,14 +1,14 @@
 import json
 from typing import Any
 
-from ..base import CommonData
-from .base import ServerUpdater, ServerUpdaterConfigSchema
+from ..base import DownloadInfo, ResourceData
+from .base import ServerUpdater, ServerUpdaterConfig, ServerUpdaterConfigSchema
 
 
 class PurpurUpdater(ServerUpdater):
-    def __init__(self, server_data, updater_config):
+    def __init__(self, server_data: ResourceData, updater_config: ServerUpdaterConfig):
         self.api = "https://api.purpurmc.org/v2/purpur"
-        self.new_updater_config = updater_config
+        self.new_updater_config = ServerUpdaterConfig()
         super().__init__(server_data, updater_config)
 
     @staticmethod
@@ -45,7 +45,7 @@ class PurpurUpdater(ServerUpdater):
 
         return json.loads(res.read())
 
-    def get_update(self):
+    def get_update(self) -> DownloadInfo | None:
         server_version = self.updater_config.server_config["version"]
         update_data = self._get_update_data(server_version)
         if not update_data:
@@ -77,7 +77,4 @@ class PurpurUpdater(ServerUpdater):
                 return
 
         self.new_updater_config.server_config["build_number"] = remote_build_number
-
-        server_data = CommonData(self.get_updater_name(), "")
-        server_data.set_url(url)
-        return server_data
+        return DownloadInfo(url)
