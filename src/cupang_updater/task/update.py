@@ -356,6 +356,7 @@ def update_plugin(config: Config) -> None:
                 config_path, new_plugin_file, resource_data, plugin_config_update = (
                     job.result()
                 )
+                plugin_name = resource_data.name
 
                 log.info(
                     f"[green]Update config for {plugin_name} [cyan]{new_plugin_file.name}"
