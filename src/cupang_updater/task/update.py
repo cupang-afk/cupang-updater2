@@ -103,6 +103,14 @@ def _handle_server_update(
         if is_dl_error:
             return
 
+        server_hash = FileHash(server_file)
+
+        server_hash.md5
+        server_hash.sha1
+        server_hash.sha256
+        server_hash.sha512
+        resource_data.hashes = server_hash._hashes
+
         return updater.get_config_path(), resource_data, updater.get_config_update()
 
 
@@ -183,6 +191,11 @@ def _handle_plugin_update(
         jar_info = get_jar_info(new_plugin_file)
         new_plugin_file = jar_rename(new_plugin_file, jar_info)
         plugin_hash = FileHash(new_plugin_file)
+
+        plugin_hash.md5
+        plugin_hash.sha1
+        plugin_hash.sha256
+        plugin_hash.sha512
 
         resource_data.version = jar_info.version
         resource_data.hashes = plugin_hash
