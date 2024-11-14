@@ -35,9 +35,7 @@ def _handle_server_update(
     server_file: Path = server_folder / server_data["file"]
     server_type: str = server_data["type"]
     server_version: str = server_data["version"]
-    server_data["build_number"] = (
-        0 if not server_file.exists() else server_data["build_number"]
-    )
+    server_data["build_number"] = server_data["build_number"] or 0
 
     if server_file.exists():
         if server_data["hashes"]["md5"]:
