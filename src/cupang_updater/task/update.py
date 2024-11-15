@@ -119,8 +119,8 @@ def _handle_plugin_update(
     plugin_data: dict,
     plugin_common: dict = None,
 ) -> tuple[str, Path, ResourceData, PluginUpdaterConfig] | None:
-    plugin_file = plugins_folder / str(plugin_data["file"])
-    plugin_version = plugin_data["version"]
+    plugin_file: Path = plugins_folder / plugin_data["file"]
+    plugin_version: str = plugin_data["version"]
 
     if plugin_file.exists():
         if plugin_data["hashes"]["md5"]:
@@ -185,7 +185,6 @@ def _handle_plugin_update(
         if is_dl_error:
             return
 
-        plugin_file.unlink(missing_ok=True)
         jar_info = get_jar_info(new_plugin_file)
         new_plugin_file = jar_rename(new_plugin_file, jar_info)
         plugin_hash = FileHash(new_plugin_file)
@@ -357,6 +356,9 @@ def update_plugin(config: Config) -> None:
                     job.result()
                 )
                 plugin_name = resource_data.name
+                old_plugin = Path(plugins_folder / plugins[plugin_name]["file"])
+                if old_plugin.absolute() != new_plugin_file.absolute():
+                    old_plugin.unlink(missing_ok=True)
 
                 log.info(
                     f"[green]Update config for {plugin_name} [cyan]{new_plugin_file.name}"
