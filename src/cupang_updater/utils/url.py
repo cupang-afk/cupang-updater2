@@ -95,3 +95,22 @@ def check_content_type(res: HTTPResponse, content_type: str) -> bool:
     ):
         return False
     return True
+
+
+def parse_url(url: str) -> urllib.parse.ParseResult:
+    """
+    Parse a URL into a urllib.parse.ParseResult object.
+
+    Args:
+        url (str): The URL to parse.
+
+    Returns:
+        urllib.parse.ParseResult: The parsed URL.
+
+    Example:
+    >>> parse_url("https://example.com/path/to/resource?key=value")
+    ParseResult(scheme='https', netloc='example.com', path='/path/to/resource',
+                params='', query='key=value', fragment='')
+    """
+    # I should use this directly tbh, but whatever
+    return urllib.parse.urlparse(url)

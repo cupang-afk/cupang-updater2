@@ -22,7 +22,16 @@ default_config = """\
 last_update:
 
 settings:
-  server_folder:
+  # server_folder can be determinted by one of the following types:
+  # - Local: Use a local file path, e.g., /home/user/minecraft_server
+  # - SFTP: Use an SFTP URL in the format sftp://username:password@example.com:port/home/user/minecraft_server
+  #         where 'username' is your SFTP username, 'password' is your SFTP password, 'example.com' is the host,
+  #         and 'port' is the connection port (e.g., 22).
+  # - FTP: Use an FTP URL in the format ftp://username:password@example.com:port/home/user/minecraft_server
+  #        where 'username' is your FTP username, 'password' is your FTP password, 'example.com' is the host,
+  #        and 'port' is the connection port (e.g., 21).
+  server_folder: 
+  sftp_key: # path to your SSH private key file (e.g., ~/.ssh/id_rsa), required for SFTP connection
   update_cooldown: 12 # in hour
   keep_removed: true # set to false if you want to remove "removed" plugins in config
   update_order: # top to bottom

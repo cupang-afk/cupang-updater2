@@ -2,12 +2,14 @@ import json
 import shutil
 import zipfile
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 from typing import IO, Any
 
 import strictyaml as sy
 import toml
 
+from ..remote_storage.base import RemoteIO
 from .common import ensure_path
 
 _jar_yaml_schema = sy.MapCombined(
@@ -108,21 +110,42 @@ def get_jar_info(jar_file: str | Path | IO[bytes]) -> JarInfo:
         return JarInfo(plugin_name, plugin_version, plugin_authors)
 
 
-def jar_rename(jar_file: str | Path | IO[bytes], jar_info: JarInfo = None) -> Path:
-    """Rename a given jar file based on its extracted metadata.
+def jar_rename(
+    jar_path: str | Path,
+    jar_info: JarInfo = None,
+    remote_connection: RemoteIO = None,
+) -> Path:
+    """
+    Rename a given jar file based on its extracted metadata.
 
     Args:
-        jar_file (str | Path | IO[bytes]): The jar file.
+        jar_path (str | Path): The jar path.
         jar_info (JarInfo): Metadata of the jar file.
 
     Returns:
         Path: The new path of the renamed jar file.
+
+    Notes:
+        If remote_connection is provided, the jar file will be renamed on the remote storage.
+        so jar_path must be provided as a remote path.
+        Return value is a remote path but wrapped as Path object.
     """
-    jar_file = ensure_path(jar_file)
+    jar_path = ensure_path(jar_path)
     if not jar_info:
-        jar_info = get_jar_info(jar_file)
+        if remote_connection:
+            with BytesIO() as f:
+                remote_connection.downloadfo(jar_path.as_posix(), f)
+                jar_info = get_jar_info(f)
+        else:
+            jar_info = get_jar_info(jar_path)
 
     new_name = f"{jar_info.name} [{jar_info.version}].jar"
-    new_file = jar_file.with_name(new_name)
-    shutil.move(jar_file, new_file)
+
+    new_file = jar_path.with_name(new_name)
+    if remote_connection:
+        remote_connection.move(
+            jar_path.as_posix(), jar_path.with_name(new_name).as_posix()
+        )
+    else:
+        shutil.move(jar_path, new_file)
     return new_file

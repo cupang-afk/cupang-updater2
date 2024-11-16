@@ -1,5 +1,5 @@
 import re
-from io import StringIO
+from io import BytesIO, StringIO
 from pathlib import Path
 
 import strictyaml as sy
@@ -7,6 +7,8 @@ import strictyaml as sy
 from ..config.config import Config
 from ..logger.logger import get_logger
 from ..manager.plugin import get_plugin_default
+from ..meta import get_appdir, stop_event
+from ..remote_storage.remote import get_remote_connection
 from ..rich import get_rich_status
 from ..utils.common import reindent
 from ..utils.config import fix_config
@@ -29,7 +31,15 @@ def scan_plugins(config: Config) -> None:
         FileNotFoundError: If the plugins folder does not exist.
     """
     log = get_logger()
-    plugins_folder = Path(config.get("settings.server_folder").data, "plugins")
+    try:
+        remote_connection = get_remote_connection()
+        remote_plugins_folder = Path(remote_connection.base_dir, "plugins").as_posix()
+        plugins_folder = get_appdir().caches_path / "plugins"
+        plugins_folder.mkdir(exist_ok=True)
+        is_remote = True
+    except RuntimeError:
+        plugins_folder = Path(config.get("settings.server_folder").data, "plugins")
+        is_remote = False
     is_new_plugin = False
     keep_removed: bool = config.get(
         "settings.keep_removed", sy.YAML(False, sy.Bool())
@@ -68,16 +78,49 @@ def scan_plugins(config: Config) -> None:
             )
             raise FileNotFoundError
 
-        for jar in plugins_folder.glob("*.jar"):
-            jar_info = get_jar_info(jar)
-            if jar.name == f"{jar_info.name} [{jar_info.version}].jar":
-                continue
-            new_jar = jar_rename(jar, jar_info)
-            log.info(f"[green]Renaming [cyan]{jar.name} [green]-> [cyan]{new_jar.name}")
+        if is_remote:
+            plugin_list = [
+                str(p) for p in remote_connection.glob(remote_plugins_folder, "*.jar")
+            ]
+        else:
+            plugin_list = [str(p) for p in plugins_folder.glob("*.jar")]
 
-        for jar in plugins_folder.glob("*.jar"):
-            file_hash = FileHash(jar)
-            jar_info = get_jar_info(jar)
+        plugin_list = sorted(plugin_list, key=lambda x: Path(x).name)
+
+        for jar in plugin_list:
+            if stop_event.set():
+                break
+            if is_remote:
+                with BytesIO() as f:
+                    remote_connection.downloadfo(jar, f)
+                    f.seek(0)
+                    file_hash = FileHash(f)
+                    file_hash.md5
+                    file_hash.sha1
+                    file_hash.sha256
+                    file_hash.sha512
+                    f.seek(0)
+                    jar_info = get_jar_info(f)
+            else:
+                file_hash = FileHash(jar)
+                jar_info = get_jar_info(jar)
+
+            status_update(status, f"Scanning plugins {jar_info.name}", no_log=True)
+
+            jar = Path(jar)
+
+            # rename the jar in PluginName [Version].jar
+            if jar.name != f"{jar_info.name} [{jar_info.version}].jar":
+                new_jar = jar_rename(
+                    jar,
+                    jar_info,
+                    remote_connection if is_remote else None,
+                )
+                log.info(
+                    f"[green]Renaming [cyan]{Path(jar).name} [green]-> [cyan]{new_jar.name}"
+                )
+                jar = new_jar
+
             default_plugin_data = get_plugin_default()
 
             if plugins_config.get(jar_info.name, sy.YAML(None, sy.EmptyNone())).data:
@@ -136,7 +179,7 @@ def scan_plugins(config: Config) -> None:
         for name in plugins_config.keys():
             fix_config(
                 plugins_config[name],
-                default_plugin_data,
+                get_plugin_default(),
                 name,
             )
         status_update(status, "Finished Fixing Config")

@@ -1,7 +1,7 @@
 import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import BinaryIO, Self
+from typing import IO, Self
 
 from .common import ensure_path
 
@@ -25,17 +25,21 @@ class Hashes:
 
 
 class FileHash:
-    def __init__(self, file: Path | str):
-        self._file: Path = ensure_path(file)
+    def __init__(self, file: str | Path | IO[bytes]):
+        self._file: Path | IO[bytes] = (
+            ensure_path(file) if isinstance(file, (str, Path)) else file
+        )
         self._hashes: Hashes = Hashes()
 
     @classmethod
-    def with_known_hashes(cls, file: Path | str, known_hashes: Hashes) -> Self:
+    def with_known_hashes(
+        cls, file: str | Path | IO[bytes], known_hashes: Hashes
+    ) -> Self:
         """
         Create a new FileHash instance for the given file
 
         Args:
-            file (Path | str): The path to the file for which to create the FileHash instance.
+            file (str | Path | IO[bytes]): The path to the file for which to create the FileHash instance.
             known_hashes (dict[str, str], optional): A dictionary of known hash values for the file,
                 where keys are hash algorithm names (e.g., 'md5', 'sha256') and values are the corresponding hash values.
 
@@ -50,17 +54,18 @@ class FileHash:
     def dummy(cls) -> Self:
         return cls(__file__)
 
-    def _hash(self, stream: BinaryIO, hash_tool) -> str:
+    def _hash(self, stream: IO[bytes], hash_tool) -> str:
         """
-        Compute a hash of the given stream using the given hash tool.
+        Compute the hash of the given stream using the specified hash tool.
 
         Args:
-            stream (BinaryIO): The stream from which to read the data.
-            hash_tool: The hash tool to use to compute the hash.
+            stream (IO[bytes]): The stream to read data from.
+            hash_tool: The hashing tool to use for computing the hash.
 
         Returns:
             str: The computed hash value as a hexadecimal string.
         """
+        stream.seek(0)
         while True:
             data = stream.read(_DEFAULT_CHUNK_SIZE)
             if not data:
@@ -82,8 +87,12 @@ class FileHash:
             return getattr(self._hashes, hash_name)
 
         hash_tool = hashlib.new(hash_name)
-        with self._file.open("rb") as stream:
-            hash = self._hash(stream, hash_tool)
+        if isinstance(self._file, (str, Path)):
+            with self._file.open("rb") as stream:
+                hash = self._hash(stream, hash_tool)
+                setattr(self._hashes, hash_name, hash)
+        else:
+            hash = self._hash(self._file, hash_tool)
             setattr(self._hashes, hash_name, hash)
         return hash
 

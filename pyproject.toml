@@ -12,6 +12,7 @@ dependencies = [
     "toml>=0.10.2",
     "requests>=2.32.3",
     "packaging>=24.2",
+    "paramiko>=3.5.0",
 ]
 requires-python = ">=3.12"
 readme = "README.md"

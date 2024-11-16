@@ -1,4 +1,6 @@
 import re
+import shutil
+import stat
 import textwrap
 from pathlib import Path
 
@@ -80,3 +82,15 @@ def remove_suffix(path: Path) -> Path:
     if path.suffix == "":
         return path
     return remove_suffix(path.with_suffix(""))
+
+
+def rmdir(dir: Path):
+    """
+    Recursively removes the directory and its contents.
+
+    Parameters:
+        dir: Path to the directory to be removed.
+    """
+    for _ in dir.rglob("*"):
+        _.chmod(stat.S_IWRITE)
+    shutil.rmtree(dir.absolute())

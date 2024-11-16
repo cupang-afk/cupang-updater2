@@ -37,6 +37,7 @@ _server_updater_settings_schema: dict[str, MapValidator] = {}
 _plugin_updater_settings_schema: dict[str, MapValidator] = {}
 _settings_schema: dict[str, sy.Validator] = {
     "server_folder": sy.Str(),
+    "sftp_key": sy.EmptyNone() | sy.Str(),
     "update_cooldown": sy.Int(),
     "keep_removed": sy.Bool(),
     "update_order": sy.EmptyList() | sy.Seq(sy.Str()),

@@ -17,7 +17,10 @@ from .manager.server import (
     get_server_updater_settings_default,
     server_updater_register,
 )
-from .meta import AppDir
+from .meta import AppDir, get_appdir, setup_appdir, stop_event
+from .remote_storage.ftp import FTPStorage
+from .remote_storage.remote import get_remote_connection, setup_remote_connection
+from .remote_storage.sftp import SFTPStorage
 from .rich import console
 from .task.scan import scan_plugins
 from .task.update import update_all
@@ -33,78 +36,141 @@ from .updater.server.custom import CustomUrlServerUpdater
 from .updater.server.paper import PaperUpdater
 from .updater.server.purpur import PurpurUpdater
 from .utils.config import fix_config, update_server_type
+from .utils.url import parse_url
 
 
 def main():
-    cmd_args = opt.parse_args()
-    appdir = AppDir(cmd_args.config_dir, cmd_args.config_path)
+    try:
+        cmd_args = opt.parse_args()
+        setup_appdir(AppDir(cmd_args.config_dir, cmd_args.config_path))
+        appdir = get_appdir()
 
-    for x in [
-        appdir.base_dir,
-        appdir.ext_updater_path,
-        appdir.logs_path,
-    ]:
-        x.mkdir(parents=True, exist_ok=True)
+        for x in [
+            appdir.base_dir,
+            appdir.ext_updater_path,
+            appdir.logs_path,
+            appdir.caches_path,
+        ]:
+            x.mkdir(parents=True, exist_ok=True)
 
-    setup_logger(appdir.logs_path, cmd_args.debug)
-    setup_downloader(cmd_args)
+        setup_logger(appdir.logs_path, cmd_args.debug)
 
-    server_updater_register(PurpurUpdater)
-    server_updater_register(PaperUpdater)
-    server_updater_register(BungeeUpdater)
-    server_updater_register(CustomUrlServerUpdater)
+        server_updater_register(PurpurUpdater)
+        server_updater_register(PaperUpdater)
+        server_updater_register(BungeeUpdater)
+        server_updater_register(CustomUrlServerUpdater)
 
-    plugin_updater_register(CustomUrlPluginUpdater)
-    plugin_updater_register(BukkitUpdater)
-    plugin_updater_register(SpigotUpdater)
-    plugin_updater_register(HangarUpdater)
-    plugin_updater_register(ModrinthUpdater)
-    plugin_updater_register(GithubUpdater)
-    plugin_updater_register(JenkinsUpdater)
+        plugin_updater_register(CustomUrlPluginUpdater)
+        plugin_updater_register(BukkitUpdater)
+        plugin_updater_register(SpigotUpdater)
+        plugin_updater_register(HangarUpdater)
+        plugin_updater_register(ModrinthUpdater)
+        plugin_updater_register(GithubUpdater)
+        plugin_updater_register(JenkinsUpdater)
 
-    ext_register(appdir.ext_updater_path)
+        ext_register(appdir.ext_updater_path)
 
-    log = get_logger()
-    log.info("Loading config")
-    config = Config()
-    config.load(appdir.config_path)
-    if not config.get("settings.server_folder").data:
-        while True:
-            server_folder = Prompt.ask(
-                "Enter server folder (i.e. /home/username/server)", console=console
+        setup_downloader(cmd_args)
+
+        log = get_logger()
+        log.info("Loading config")
+        config = Config()
+        config.load(appdir.config_path)
+        server_folder: str = config.get("settings.server_folder").data
+        if not server_folder:
+            while True:
+                server_folder = Prompt.ask(
+                    "Enter server folder (i.e. /home/username/server)", console=console
+                )
+                if "://" in server_folder:
+                    config.set("settings.server_folder", server_folder)
+                    break
+                elif Path(server_folder).exists():
+                    config.set(
+                        "settings.server_folder",
+                        server_folder,
+                    )
+                    break
+                log.error("Invalid server folder, is folder exists?")
+        if "://" in server_folder:
+            parsed_url = parse_url(server_folder)
+            log.info(f"Setting up {parsed_url.scheme} storage connection")
+            try:
+                match parsed_url.scheme:
+                    case "sftp":
+                        setup_remote_connection(
+                            SFTPStorage(
+                                parsed_url.hostname,
+                                parsed_url.port,
+                                parsed_url.username,
+                                parsed_url.password,
+                                config.get("settings.sftp_key").data,
+                            ),
+                            parsed_url.path,
+                        )
+                    case "ftp":
+                        setup_remote_connection(
+                            FTPStorage(
+                                parsed_url.hostname,
+                                parsed_url.port,
+                                parsed_url.username,
+                                parsed_url.password,
+                            ),
+                            parsed_url.path,
+                        )
+                    case _:
+                        raise RuntimeError(f"Unsupported protocol: {parsed_url.scheme}")
+            except Exception:
+                log.exception("Failed to setup remote connection")
+                return
+        else:
+            if not Path(server_folder).is_absolute():
+                config.set(
+                    "settings.server_folder",
+                    str(Path(server_folder).expanduser().absolute()),
+                )
+        if not config.get("settings.update_order").data:
+            config.set("settings.update_order", list(get_plugin_updaters().keys()))
+        else:
+            update_order = config.get("settings.update_order").data
+            update_order = [
+                x for x in update_order if x in get_plugin_updaters().keys()
+            ]
+            update_order.extend(
+                [x for x in get_plugin_updaters().keys() if x not in update_order]
             )
-            server_folder = Path(server_folder).expanduser().absolute()
-            if server_folder.exists():
-                config.set("settings.server_folder", server_folder.as_posix())
-                break
-            log.error("Invalid server folder, is folder exists?")
-    if not config.get("settings.update_order").data:
-        config.set("settings.update_order", list(get_plugin_updaters().keys()))
-    else:
-        update_order = config.get("settings.update_order").data
-        update_order = [x for x in update_order if x in get_plugin_updaters().keys()]
-        update_order.extend(
-            [x for x in get_plugin_updaters().keys() if x not in update_order]
+        fix_config(
+            config.strictyaml["updater_settings"]["server"],
+            get_server_updater_settings_default(),
+            "Updater Settings Server",
         )
-    fix_config(
-        config.strictyaml["updater_settings"]["server"],
-        get_server_updater_settings_default(),
-        "Updater Settings Server",
-    )
-    fix_config(
-        config.strictyaml["updater_settings"]["plugin"],
-        get_plugin_updater_settings_default(),
-        "Updater Settings Plugin",
-    )
-    update_server_type(config, get_server_types())
-    config.save()
-    config.reload()
+        fix_config(
+            config.strictyaml["updater_settings"]["plugin"],
+            get_plugin_updater_settings_default(),
+            "Updater Settings Plugin",
+        )
+        update_server_type(config, get_server_types())
+        config.save()
+        config.reload()
 
-    if cmd_args.scan_only:
-        scan_plugins(config)
-    else:
-        scan_plugins(config)
-        update_all(config, cmd_args)
+        if cmd_args.scan_only:
+            scan_plugins(config)
+        else:
+            scan_plugins(config)
+            update_all(config, cmd_args)
+        stop()
+    except (Exception, KeyboardInterrupt) as e:
+        stop()
+        console.print_exception()
+        print(f"{e.__class__.__name__}{(": " + str(e)) if str(e) else ''}")
+
+
+def stop():
+    stop_event.set()
+    try:
+        get_remote_connection().close()
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
