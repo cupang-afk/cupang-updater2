@@ -3,7 +3,7 @@ import shutil
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import IO, Any
 
 import strictyaml as sy
 import toml
@@ -29,18 +29,18 @@ class JarInfo:
     authors: list[str]
 
 
-def get_jar_info(jar_path: str | Path) -> JarInfo:
+def get_jar_info(jar_file: str | Path | IO[bytes]) -> JarInfo:
     """Extract metadata from a given jar file.
 
     Supports Bukkit, Velocity, Fabric, and Forge mods.
 
     Args:
-        jar_path (str | Path): Path to the jar file.
+        jar_path (str | Path | IO[bytes]): The jar file.
 
     Returns:
         JarInfo: A JarInfo instance containing the metadata.
     """
-    with zipfile.ZipFile(ensure_path(jar_path)) as jar:
+    with zipfile.ZipFile(jar_file) as jar:
         config: dict[str, Any]
         plugin_name: str | None = None
         plugin_version: str | None = None
@@ -108,21 +108,21 @@ def get_jar_info(jar_path: str | Path) -> JarInfo:
         return JarInfo(plugin_name, plugin_version, plugin_authors)
 
 
-def jar_rename(jar_path: str | Path, jar_info: JarInfo = None) -> Path:
+def jar_rename(jar_file: str | Path | IO[bytes], jar_info: JarInfo = None) -> Path:
     """Rename a given jar file based on its extracted metadata.
 
     Args:
-        jar_path (str | Path): Path to the jar file.
+        jar_file (str | Path | IO[bytes]): The jar file.
         jar_info (JarInfo): Metadata of the jar file.
 
     Returns:
         Path: The new path of the renamed jar file.
     """
-    jar_path = ensure_path(jar_path)
+    jar_file = ensure_path(jar_file)
     if not jar_info:
-        jar_info = get_jar_info(jar_path)
+        jar_info = get_jar_info(jar_file)
 
     new_name = f"{jar_info.name} [{jar_info.version}].jar"
-    new_file = jar_path.with_name(new_name)
-    shutil.move(jar_path, new_file)
+    new_file = jar_file.with_name(new_name)
+    shutil.move(jar_file, new_file)
     return new_file
