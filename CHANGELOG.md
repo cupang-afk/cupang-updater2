@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.0 - 2024-11-16
+
+### Bug Fixes
+
+- Scanning FileHash error when jar is renamed ([c6f2ec3](c6f2ec355de137fae496a34c3057937ae021bb09))
+
+### Bump
+
+- Version 0.1.0 -> 0.1.1 ([]())
+
 ## 0.1.0 - 2024-11-16
+
+[1ab8df2](1ab8df213797651bc9badc6f4f75fd366f936a2a)...[9518cef](9518cef28df5673a6244c509bf35568665fee761)
 
 ### Bug Fixes
 
@@ -13,8 +25,8 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - Rename plugin.jar when scanning based on plugin metadata ([c90c513](c90c513c0cc8fc386693422eec214879d19a0c56))
-- Add SFTP and FTP support ([6477265](6477265f047aa068a44e7dae516ef0a906d58c7f))
-- Add --parallel-downloads option for concurrent downloads ([fdaadb2](fdaadb20e4104f6e4b89801e4a649f8fbb8df466))
+- Add SFTP and FTP support ([e6dbaa3](e6dbaa30bf0c8f9581aef389f615cf520b44bb96))
+- Add --parallel-downloads option for concurrent downloads ([218fd41](218fd41b00713f703d56c476d2b4e604e6d644b4))
 
 ### Miscellaneous Tasks
 
@@ -24,7 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.0.2 -> 0.1.0 ([]())
+- Version 0.0.2 -> 0.1.0 ([9518cef](9518cef28df5673a6244c509bf35568665fee761))
 
 ## 0.0.2 - 2024-11-09
 
