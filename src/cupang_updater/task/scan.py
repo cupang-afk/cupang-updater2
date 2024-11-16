@@ -103,6 +103,10 @@ def scan_plugins(config: Config) -> None:
                     jar_info = get_jar_info(f)
             else:
                 file_hash = FileHash(jar)
+                file_hash.md5
+                file_hash.sha1
+                file_hash.sha256
+                file_hash.sha512
                 jar_info = get_jar_info(jar)
 
             status_update(status, f"Scanning plugins {jar_info.name}", no_log=True)
