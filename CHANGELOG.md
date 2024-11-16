@@ -2,7 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.0 - 2024-11-16
+
+### Bug Fixes
+
+- Fix server and plugin hash not always available ([1bb5e8e](1bb5e8e1c987953feac4e18258e267a642d1463d))
+- Fix server build_number get empty when server.jar is not present ([6e8a3ee](6e8a3eebec60d9a96108fe06d50951e20562cf2b))
+- Fix plugin_name not always correct ([13f3adf](13f3adf1c7e386265e785b7176badf777ef606b6))
+
+### Features
+
+- Rename plugin.jar when scanning based on plugin metadata ([c90c513](c90c513c0cc8fc386693422eec214879d19a0c56))
+- Add SFTP and FTP support ([6477265](6477265f047aa068a44e7dae516ef0a906d58c7f))
+- Add --parallel-downloads option for concurrent downloads ([fdaadb2](fdaadb20e4104f6e4b89801e4a649f8fbb8df466))
+
+### Miscellaneous Tasks
+
+- Simplify the updater ([5786845](5786845785e36eeaa3a48d55b1651510c9d28297))
+- Handle old plugin delete inside update_plugin instead of handler ([ac02094](ac020941995c3485adfc5c16d1562798c6db9d2c))
+- Add file stream support to get_jar_info ([7327635](7327635a49b7667fe987a831bee71879e270c1bd))
+
+### Bump
+
+- Version 0.0.2 -> 0.1.0 ([]())
+
 ## 0.0.2 - 2024-11-09
+
+[59207a7](59207a70a58a8d7bec6f28e7b53000ecf857ed7f)...[1ab8df2](1ab8df213797651bc9badc6f4f75fd366f936a2a)
 
 ### Bug Fixes
 
@@ -22,7 +48,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.0.1 -> 0.0.2 ([]())
+- Version 0.0.1 -> 0.0.2 ([1ab8df2](1ab8df213797651bc9badc6f4f75fd366f936a2a))
 
 ## 0.0.1 - 2024-11-09
 
