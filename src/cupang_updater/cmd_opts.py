@@ -87,6 +87,15 @@ opt_downloader.add_argument(
     help="Set downloader (default: %(default)s)",
 )
 opt_downloader.add_argument(
+    "--parallel-downloads",
+    dest="parallel_downloads",
+    action="store",
+    metavar="INT",
+    type=int,
+    default=5,
+    help="Set how many simultaneous downloads (default: %(default)s)",
+)
+opt_downloader.add_argument(
     "--aria2c-bin",
     dest="aria2c_bin",
     action="store",

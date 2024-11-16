@@ -318,12 +318,13 @@ def update_server(config: Config) -> None:
             status_update(status, "Finished Updating Server")
 
 
-def update_plugin(config: Config) -> None:
+def update_plugin(config: Config, opt: argparse.Namespace) -> None:
     """
     Update the plugins based on the given configuration.
 
     Args:
         config (Config): The configuration object containing update settings.
+        opt (argparse.Namespace): Parsed command line options.
     """
     log = get_logger()
     status = get_rich_status()
@@ -353,7 +354,7 @@ def update_plugin(config: Config) -> None:
 
         plugins: dict[str, dict] = config.get("plugins").data
 
-        with ThreadPoolExecutor(5) as worker:
+        with ThreadPoolExecutor(opt.parallel_downloads) as worker:
             jobs: list[Future] = []
             status_update(status, "Updating plugins")
             for plugin_name, plugin_data in plugins.items():
@@ -472,7 +473,7 @@ def update_all(config: Config, opt: argparse.Namespace) -> None:
             return
 
     update_server(config)
-    update_plugin(config)
+    update_plugin(config, opt)
     config.set("last_update", str(parse_date_datetime(datetime.now())))
     config.save()
     config.reload()
