@@ -401,7 +401,8 @@ def update_plugin(config: Config, opt: argparse.Namespace) -> None:
                     if job.cancelled() or not job.result():
                         continue
                 except Exception:
-                    log.exception("Failed to update plugin")
+                    if not stop_event.is_set():
+                        log.exception("Failed to update plugin")
                     continue
                 config_path, new_plugin_file, resource_data, plugin_config_update = (
                     job.result()

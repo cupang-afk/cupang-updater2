@@ -88,7 +88,7 @@ def scan_plugins(config: Config) -> None:
         plugin_list = sorted(plugin_list, key=lambda x: Path(x).name)
 
         for jar in plugin_list:
-            if stop_event.set():
+            if stop_event.is_set():
                 break
             if is_remote:
                 with BytesIO() as f:
