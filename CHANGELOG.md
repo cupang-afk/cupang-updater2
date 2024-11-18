@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.2.0 - 2024-11-16
+## 0.2.0 - 2024-11-18
+
+### Bug Fixes
+
+- I somewhat stupid making stop_event set while scanning which is not good ([82b0c8b](82b0c8b2d4ba1f5ec76bc03060cec087262b171d))
+
+### Bump
+
+- Version 0.1.1 -> 0.1.2 ([]())
+
+## 0.1.1 - 2024-11-16
+
+[9518cef](9518cef28df5673a6244c509bf35568665fee761)...[bc37080](bc37080a222e6f1b5bce4e959c651ac5c1da83fa)
 
 ### Bug Fixes
 
@@ -10,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.1.0 -> 0.1.1 ([]())
+- Version 0.1.0 -> 0.1.1 ([bc37080](bc37080a222e6f1b5bce4e959c651ac5c1da83fa))
 
 ## 0.1.0 - 2024-11-16
 
