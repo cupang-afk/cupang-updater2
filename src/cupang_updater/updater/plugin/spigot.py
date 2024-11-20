@@ -61,17 +61,18 @@ class SpigotUpdater(PluginUpdater):
         if not resource_id:
             return
 
+        local_version = self.parse_version(self.plugin_data.version)
+        remote_version = str(self._get_version(resource_id))
+        if local_version >= self.parse_version(remote_version):
+            return
+
         is_premium = self._is_premium(resource_id)
         if is_premium:
             self.log.info(
                 f"Plugin {self.plugin_data.name} is premium\n"
                 f"Download it yourself at https://www.spigotmc.org/resources/{resource_id}"
+                f"New version found: {remote_version}"
             )
-            return
-
-        local_version = self.parse_version(self.plugin_data.version)
-        remote_version = str(self._get_version(resource_id))
-        if local_version >= self.parse_version(remote_version):
             return
 
         url = self.make_url(self.api, "resources", resource_id, "download")
