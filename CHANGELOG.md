@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.2.0 - 2024-11-18
+## 0.1.3 - 2024-11-20
+
+### Bug Fixes
+
+- Make spigot premium plugin check after new version check ([940abae](940abae8b5e8caa50b80fec32cf0d8986cc7e870))
+
+### Bump
+
+- Version 0.1.2 -> 0.1.3 ([]())
+
+## 0.1.2 - 2024-11-18
+
+[bc37080](bc37080a222e6f1b5bce4e959c651ac5c1da83fa)...[6b1ba76](6b1ba7693a054d4a74fc3a95c1f955ba360e47e6)
 
 ### Bug Fixes
 
@@ -10,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.1.1 -> 0.1.2 ([]())
+- Version 0.1.1 -> 0.1.2 ([6b1ba76](6b1ba7693a054d4a74fc3a95c1f955ba360e47e6))
 
 ## 0.1.1 - 2024-11-16
 
