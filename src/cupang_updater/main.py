@@ -22,6 +22,7 @@ from .remote_storage.ftp import FTPStorage
 from .remote_storage.remote import get_remote_connection, setup_remote_connection
 from .remote_storage.sftp import SFTPStorage
 from .remote_storage.smb import SMBStorage
+from .remote_storage.webdav import WebdavStorage
 from .rich import console
 from .task.scan import scan_plugins
 from .task.update import update_all
@@ -129,9 +130,21 @@ def main():
                             ),
                             parsed_url.path,
                         )
+                    case "webdav" | "webdavs":
+                        protocol = "http" if parsed_url.scheme == "webdav" else "https"
+                        setup_remote_connection(
+                            WebdavStorage(
+                                parsed_url.hostname,
+                                parsed_url.port,
+                                parsed_url.username,
+                                parsed_url.password,
+                                protocol,
+                            ),
+                            parsed_url.path,
+                        )
                     case _:
                         raise RuntimeError(f"Unsupported protocol: {parsed_url.scheme}")
-            except Exception:
+            except (BaseException, Exception):
                 log.exception("Failed to setup remote connection")
                 return
         else:
