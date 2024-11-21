@@ -72,7 +72,11 @@ def scan_plugins(config: Config) -> None:
     with status:
         status_update(status, "Scanning Plugins")
 
-        if not plugins_folder.exists():
+        if not (
+            remote_connection.exists(remote_plugins_folder)
+            if is_remote
+            else plugins_folder.exists()
+        ):
             log.error(
                 "Could not check plugins because plugins folder is not exist :shrug:"
             )
