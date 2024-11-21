@@ -49,8 +49,9 @@ class FTPStorage(RemoteIO):
         if self.is_dir(from_path):
             self.mkdir(to_path)
             for item in self.rglob(from_path):
-                item_from_path = ensure_path(from_path, item).as_posix()
-                item_to_path = ensure_path(to_path, item).as_posix()
+                item = ensure_path(item)
+                item_from_path = Path(from_path, item.name).as_posix()
+                item_to_path = Path(to_path, item.name).as_posix()
                 self.copy(item_from_path, item_to_path)
         else:
             with BytesIO() as f:
