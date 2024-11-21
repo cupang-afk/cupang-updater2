@@ -1,10 +1,12 @@
 A Minecraft Server/Plugin Updater
 
+Supports remote storage using FTP, SFTP, SMB (Samba) and Webdav. 
+
 This is a rewrite of [cupang-updater](https://github.com/cupang-afk/cupang-updater) with a focus on making it easier to implement new features.
 
 ### Documentation
 
-The documentation for this project can be found [here](https://cupang-afk.github.io/cupang-updater2).
+The documentation for this project can be found [here]
 
 ### Install
 
@@ -19,6 +21,35 @@ $ cupang-updater
 ```
 
 Running for the first time creates a `cupang-updater` directory with a `config.yaml` file for configuration. Use `--config-dir` and `--config` to change their locations.
+
+### Remote Storage
+
+To configure remote storage, please modify the `config.yaml` file appropriately.
+
+The supported remote storage types are:
+
+- `sftp://` for SFTP (Secure File Transfer Protocol)
+- `ftp://` for FTP (File Transfer Protocol)
+- `smb://` for SMB (Server Message Block)
+- `webdav://` for WebDAV (Web-based Distributed Authoring and Versioning)
+
+The format of the `server_folder` configuration option is:
+
+`<scheme>://<username>:<password>@<host>:<port>/<path>`
+
+Where `<scheme>` is one of the above, `<username>` is your username for the
+remote storage, `<password>` is your password, `<host>` is the hostname or
+IP address of the remote storage server, `<port>` is the port number to use
+(defaults to the default port for the scheme), and `<path>` is the path to the
+Minecraft server directory on the remote storage server.
+
+For example, if you want to use SFTP with username `user` and password `pass`
+on host `example.com` at port 22 with a path of `/home/user/minecraft`,
+the `server_folder` configuration option would be:
+
+`sftp://user:pass@example.com:22/home/user/minecraft`
+
+Please see `config.yaml` for more details on the configuration options.
 
 ### Custom Updater
 
@@ -208,3 +239,4 @@ This project is licensed under the GNU General Public License version 3. See the
 ### TODO
 
 - [ ] Update documentation
+- [ ] Bug fix
