@@ -12,6 +12,8 @@ is_compiled = (
 
 cwd = (Path(sys.executable).parent) if is_compiled else Path.cwd()
 _temp_appdir = AppDir(cwd / app_name)
+_opt_parsed = None
+
 
 opt = argparse.ArgumentParser(
     app_name, description=f"{app_name} {app_version}\nA Minecraft Server/Plugin Updater"
@@ -38,6 +40,15 @@ opt_main.add_argument(
     help="Force to do update check despite the cooldown (default: %(default)s)",
 )
 opt_main.add_argument(
+    "-fr",
+    "--force-leftover-update",
+    dest="force_leftover_update",
+    action="store_true",
+    default=False,
+    help="Force to update leftover plugins (default: %(default)s)",
+)
+opt_main.add_argument(
+    "-sc",
     "--scan-only",
     dest="scan_only",
     action="store_true",
@@ -45,13 +56,14 @@ opt_main.add_argument(
     help="Scan plugins without checking update (default: %(default)s)",
 )
 opt_main.add_argument(
-    "--debug",
+    "-V" "--debug",
     dest="debug",
     action="store_true",
     default=False,
     help="Enable debug mode (default: %(default)s)",
 )
 opt_config.add_argument(
+    "-cc",
     "--config-dir",
     dest="config_dir",
     action="store",
@@ -61,6 +73,7 @@ opt_config.add_argument(
     help=f"Set config dir (default: {_temp_appdir.base_dir.relative_to(cwd)})",
 )
 opt_config.add_argument(
+    "-c",
     "--config",
     dest="config_path",
     action="store",
@@ -70,13 +83,15 @@ opt_config.add_argument(
     help=f"Set config file (default: {_temp_appdir.config_path.relative_to(cwd)})",
 )
 opt_config.add_argument(
-    "--config-cleanup",
-    dest="config_cleanup",
+    "-fcl",
+    "--force-cleanup",
+    dest="force_cleanup",
     action="store_true",
-    default=True,
-    help="Cleanup your config from unregistered updater (default: %(default)s)",
+    default=False,
+    help="Force clean leftover plugins (default: %(default)s)",
 )
 opt_downloader.add_argument(
+    "-dl",
     "--downloader",
     dest="downloader",
     action="store",
@@ -87,6 +102,7 @@ opt_downloader.add_argument(
     help="Set downloader (default: %(default)s)",
 )
 opt_downloader.add_argument(
+    "-pdl",
     "--parallel-downloads",
     dest="parallel_downloads",
     action="store",
@@ -122,3 +138,13 @@ opt_downloader.add_argument(
     default=None,
     help="Set curl binary (default: None)",
 )
+
+
+def parse_cmd():
+    global _opt_parsed
+    if _opt_parsed is None:
+        _opt_parsed = opt.parse_args()
+
+
+def get_cmd_opts():
+    return _opt_parsed

@@ -1,5 +1,6 @@
 from cupang_downloader.downloader import Downloader
 
+from ..cmd_opts import get_cmd_opts
 from ..logger.logger import get_logger
 from ..meta import stop_event
 
@@ -16,16 +17,13 @@ def _setup_fallback_downloader():
     _downloader = Downloader(UrllibDownloader(cancel_event=stop_event))
 
 
-def setup_downloader(opt):
+def setup_downloader():
     """
     Set up the downloader.
 
-    Args:
-        opt (argparse.Namespace): The parsed command line arguments.
-
-    Raises:
-        Exception: If the specified downloader is not supported, or if the
-            downloader setup fails, a fallback is used.
+    Note:
+        If the specified downloader is not supported, or if the
+        downloader setup fails, a fallback downloader is used.
     """
 
     global _downloader
@@ -33,8 +31,9 @@ def setup_downloader(opt):
     if _downloader:
         log.warning("Downloader already setup")
         return
+    cmd_opts = get_cmd_opts()
     try:
-        match opt.downloader:
+        match cmd_opts.downloader:
             case "aria2c":
                 log.info("Setup aria2c downloader")
                 from cupang_downloader.downloaders.aria2_downloader import (
@@ -42,21 +41,23 @@ def setup_downloader(opt):
                 )
 
                 _downloader = Downloader(
-                    Aria2Downloader(aria2c_bin=opt.aria2c_bin, cancel_event=stop_event)
+                    Aria2Downloader(
+                        aria2c_bin=cmd_opts.aria2c_bin, cancel_event=stop_event
+                    )
                 )
             case "wget":
                 log.info("Setup wget downloader")
                 from cupang_downloader.downloaders.wget_downloader import WgetDownloader
 
                 _downloader = Downloader(
-                    WgetDownloader(wget_bin=opt.wget_bin, cancel_event=stop_event)
+                    WgetDownloader(wget_bin=cmd_opts.wget_bin, cancel_event=stop_event)
                 )
             case "curl":
                 log.info("Setup curl downloader")
                 from cupang_downloader.downloaders.curl_downloader import CurlDownloader
 
                 _downloader = Downloader(
-                    CurlDownloader(curl_bin=opt.curl_bin, cancel_event=stop_event)
+                    CurlDownloader(curl_bin=cmd_opts.curl_bin, cancel_event=stop_event)
                 )
             case "pycurl":
                 log.info("Setup pycurl downloader")
@@ -73,11 +74,11 @@ def setup_downloader(opt):
 
                 _downloader = Downloader(RequestsDownloader(cancel_event=stop_event))
             case _:
-                log.warning(f"Unsupported downloader: {opt.downloader}")
+                log.warning(f"Unsupported downloader: {cmd_opts.downloader}")
                 _setup_fallback_downloader()
     except Exception as e:
         log.error(
-            f"Failed to setup downloader {opt.downloader} because {type(e).__qualname__}: {e}"
+            f"Failed to setup downloader {cmd_opts.downloader} because {type(e).__qualname__}: {e}"
         )
         _setup_fallback_downloader()
 

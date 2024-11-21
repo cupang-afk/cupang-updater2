@@ -4,6 +4,7 @@ from pathlib import Path
 
 import strictyaml as sy
 
+from ..cmd_opts import get_cmd_opts
 from ..config.config import Config
 from ..logger.logger import get_logger
 from ..manager.plugin import get_plugin_default
@@ -31,6 +32,7 @@ def scan_plugins(config: Config) -> None:
         FileNotFoundError: If the plugins folder does not exist.
     """
     log = get_logger()
+    cmd_opts = get_cmd_opts()
     try:
         remote_connection = get_remote_connection()
         remote_plugins_folder = Path(remote_connection.base_dir, "plugins").as_posix()
@@ -44,6 +46,8 @@ def scan_plugins(config: Config) -> None:
     keep_removed: bool = config.get(
         "settings.keep_removed", sy.YAML(False, sy.Bool())
     ).data
+    if cmd_opts.force_cleanup:
+        keep_removed = False
 
     # updating YAML object directly is too slow
     # instead we create a new dict object that hold {plugin_name: YAML}

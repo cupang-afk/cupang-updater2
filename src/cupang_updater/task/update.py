@@ -1,4 +1,3 @@
-import argparse
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
 from copy import deepcopy
@@ -8,6 +7,7 @@ from pathlib import Path
 import strictyaml as sy
 from cupang_downloader.downloader import DownloadJob
 
+from ..cmd_opts import get_cmd_opts
 from ..config.config import Config
 from ..downloader.downloader import get_downloader
 from ..downloader.progress import get_callbacks, get_progress
@@ -318,15 +318,15 @@ def update_server(config: Config) -> None:
             status_update(status, "Finished Updating Server")
 
 
-def update_plugin(config: Config, opt: argparse.Namespace) -> None:
+def update_plugin(config: Config) -> None:
     """
     Update the plugins based on the given configuration.
 
     Args:
         config (Config): The configuration object containing update settings.
-        opt (argparse.Namespace): Parsed command line options.
     """
     log = get_logger()
+    cmd_opts = get_cmd_opts()
     status = get_rich_status()
     with get_rich_live(get_progress(), status):
         try:
@@ -354,7 +354,7 @@ def update_plugin(config: Config, opt: argparse.Namespace) -> None:
 
         plugins: dict[str, dict] = config.get("plugins").data
 
-        with ThreadPoolExecutor(opt.parallel_downloads) as worker:
+        with ThreadPoolExecutor(cmd_opts.parallel_downloads) as worker:
             jobs: list[Future] = []
             status_update(status, "Updating plugins")
             for plugin_name, plugin_data in plugins.items():
@@ -366,15 +366,16 @@ def update_plugin(config: Config, opt: argparse.Namespace) -> None:
                     log.warning(f"Plugin {plugin_name} is excluded, skipping")
                     continue
 
-                if not (
-                    remote_connection.exists(
-                        Path(remote_plugins_folder, old_plugin.name).as_posix()
-                    )
-                    if is_remote
-                    else old_plugin.exists()
-                ):
-                    log.warning(f"Plugin {plugin_name} is a leftover, skipping")
-                    continue
+                if not cmd_opts.force_leftover_update:
+                    if not (
+                        remote_connection.exists(
+                            Path(remote_plugins_folder, old_plugin.name).as_posix()
+                        )
+                        if is_remote
+                        else old_plugin.exists()
+                    ):
+                        log.warning(f"Plugin {plugin_name} is a leftover, skipping")
+                        continue
 
                 jobs.append(
                     worker.submit(
@@ -447,17 +448,17 @@ def update_plugin(config: Config, opt: argparse.Namespace) -> None:
             status_update(status, "Finished updating plugins")
 
 
-def update_all(config: Config, opt: argparse.Namespace) -> None:
+def update_all(config: Config) -> None:
     """
     Update the server and plugins.
 
     Args:
         config (Config): The configuration object containing update settings.
-        opt (argparse.Namespace): Parsed command line options.
     """
     log = get_logger()
+    cmd_opts = get_cmd_opts()
     last_update = config.get("last_update").data
-    if last_update and not opt.force:
+    if last_update and not cmd_opts.force:
         today = parse_date_datetime(datetime.now())
         last_update = parse_date_datetime(last_update)
         cooldown = timedelta(
@@ -474,7 +475,7 @@ def update_all(config: Config, opt: argparse.Namespace) -> None:
             return
 
     update_server(config)
-    update_plugin(config, opt)
+    update_plugin(config)
     config.set("last_update", str(parse_date_datetime(datetime.now())))
     config.save()
     config.reload()

@@ -2,7 +2,7 @@ from pathlib import Path
 
 from rich.prompt import Prompt
 
-from .cmd_opts import opt
+from .cmd_opts import get_cmd_opts, opt, parse_cmd
 from .config.config import Config
 from .downloader.downloader import setup_downloader
 from .logger.logger import get_logger, setup_logger
@@ -43,8 +43,9 @@ from .utils.url import parse_url
 
 def main():
     try:
-        cmd_args = opt.parse_args()
-        setup_appdir(AppDir(cmd_args.config_dir, cmd_args.config_path))
+        parse_cmd()
+        cmd_opts = get_cmd_opts()
+        setup_appdir(AppDir(cmd_opts.config_dir, cmd_opts.config_path))
         appdir = get_appdir()
 
         for x in [
@@ -55,7 +56,7 @@ def main():
         ]:
             x.mkdir(parents=True, exist_ok=True)
 
-        setup_logger(appdir.logs_path, cmd_args.debug)
+        setup_logger(appdir.logs_path)
 
         server_updater_register(PurpurUpdater)
         server_updater_register(PaperUpdater)
@@ -72,7 +73,7 @@ def main():
 
         ext_register(appdir.ext_updater_path)
 
-        setup_downloader(cmd_args)
+        setup_downloader()
 
         log = get_logger()
         log.info("Loading config")
@@ -177,11 +178,11 @@ def main():
         config.save()
         config.reload()
 
-        if cmd_args.scan_only:
+        if cmd_opts.scan_only:
             scan_plugins(config)
         else:
             scan_plugins(config)
-            update_all(config, cmd_args)
+            update_all(config)
         stop()
     except (Exception, KeyboardInterrupt) as e:
         stop()
