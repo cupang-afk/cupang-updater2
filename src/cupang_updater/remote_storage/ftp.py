@@ -1,9 +1,11 @@
 import fnmatch
 import ftplib
+import tempfile
 from io import BytesIO
 from pathlib import Path
 from typing import IO
 
+from ..meta import get_appdir
 from ..utils.common import ensure_path
 from .base import RemoteIO
 
@@ -54,7 +56,7 @@ class FTPStorage(RemoteIO):
                 item_to_path = Path(to_path, item.name).as_posix()
                 self.copy(item_from_path, item_to_path)
         else:
-            with BytesIO() as f:
+            with tempfile.NamedTemporaryFile("rb+", dir=get_appdir().caches_path) as f:
                 self._ftp.retrbinary(f"RETR {from_path}", f.write)
                 f.seek(0)
                 self._ftp.storbinary(f"STOR {to_path}", f)
@@ -173,4 +175,5 @@ class FTPStorage(RemoteIO):
 
     def downloadfo(self, from_remote_path: str, stream: IO[bytes]):
         from_remote_path = ensure_path(from_remote_path).as_posix()
+        stream.seek(0)
         self._ftp.retrbinary(f"RETR {from_remote_path}", stream.write)

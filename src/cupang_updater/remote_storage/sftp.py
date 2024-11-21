@@ -61,10 +61,15 @@ class SFTPStorage(RemoteIO):
                 item_to_path = Path(to_path, item.name).as_posix()
                 self.copy(item_from_path, item_to_path)
         else:
-            with BytesIO() as f:
-                self._sftp.getfo(from_path, f)
-                f.seek(0)
-                self._sftp.putfo(f, to_path)
+            with (
+                self._sftp.open(from_path, "rb") as fs,
+                self._sftp.open(to_path, "wb") as fd,
+            ):
+                while True:
+                    chunk = fs.read(8192)
+                    if not chunk:
+                        break
+                    fd.write(chunk)
 
     def move(self, from_path: str, to_path: str):
         from_path = ensure_path(from_path).as_posix()
