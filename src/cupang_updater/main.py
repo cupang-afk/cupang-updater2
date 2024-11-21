@@ -21,6 +21,7 @@ from .meta import AppDir, get_appdir, setup_appdir, stop_event
 from .remote_storage.ftp import FTPStorage
 from .remote_storage.remote import get_remote_connection, setup_remote_connection
 from .remote_storage.sftp import SFTPStorage
+from .remote_storage.smb import SMBStorage
 from .rich import console
 from .task.scan import scan_plugins
 from .task.update import update_all
@@ -114,6 +115,16 @@ def main():
                                 parsed_url.hostname,
                                 parsed_url.port,
                                 parsed_url.username,
+                                parsed_url.password,
+                            ),
+                            parsed_url.path,
+                        )
+                    case "smb":
+                        setup_remote_connection(
+                            SMBStorage(
+                                parsed_url.hostname,
+                                parsed_url.port,
+                                parsed_url.username.replace("%40", "@"),
                                 parsed_url.password,
                             ),
                             parsed_url.path,
