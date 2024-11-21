@@ -2,7 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.0 - 2024-11-21
+
+### Bug Fixes
+
+- Fix a typo ([fdb7474](fdb74744fcc9516ba3e62ee2a8c3dd43a9e40466))
+- Fix SFTP and FTP copy() method ([791aab0](791aab0706349cb7a33fdd89a98ed6ff6f4ce8d5))
+- Fix plugins directory is missing check on remote storage ([5ec0560](5ec05601230218b614f3e3fc75cdf91dc27e5417))
+
+### Features
+
+- Add SMB (Samba) support ([1eb6fc1](1eb6fc1980d0618d0acc9b0b5dbee6d54ffc4f1f))
+- Add Webdav support ([d147fa7](d147fa7e1d0146d4ad31be5b4d9b550eb7bdf35c))
+
+### Miscellaneous Tasks
+
+- Improve FTP and SFTP copy method ([2da948c](2da948c98a7bfdda8ac2909841cce8e02afb51bd))
+
+### Bump
+
+- Version 0.1.3 -> 0.2.0 ([]())
+
 ## 0.1.3 - 2024-11-20
+
+[6b1ba76](6b1ba7693a054d4a74fc3a95c1f955ba360e47e6)...[6663af2](6663af2d4514fb87a9d71e9b4f547034c01d3fd7)
 
 ### Bug Fixes
 
@@ -10,7 +33,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.1.2 -> 0.1.3 ([]())
+- Version 0.1.2 -> 0.1.3 ([6663af2](6663af2d4514fb87a9d71e9b4f547034c01d3fd7))
 
 ## 0.1.2 - 2024-11-18
 
