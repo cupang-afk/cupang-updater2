@@ -7,6 +7,7 @@ from pathlib import Path
 from rich.logging import RichHandler
 from rich.markup import escape
 
+from ..cmd_opts import get_cmd_opts
 from ..meta import app_name
 from ..rich import console
 from ..utils.date import parse_date_string
@@ -115,11 +116,23 @@ def _get_next_exec_n(logs_folder: Path) -> int:
     Returns:
         int: The next execution number for naming a new log file.
     """
+    date_files: dict[datetime, list[Path]] = {}
+
+    for log_file in logs_folder.glob("*.log"):
+        # Gets YYYY-MM-DD part
+        date = parse_date_string(log_file.stem.split("_")[1]).date()
+        date_files[date].append(log_file)
+
+    if not date_files:
+        return 1
+
+    latest_date = max(date_files.keys())
+
     execution_numbers = [
-        int(log_file.stem.split("_")[-1]) for log_file in logs_folder.glob(_name_format)
+        int(log_file.stem.split("_")[-1]) for log_file in date_files[latest_date]
     ]
-    latest_execution_number = max(execution_numbers, default=0)
-    return latest_execution_number + 1
+
+    return max(execution_numbers, default=0) + 1
 
 
 def _rename_latest_log(logs_folder: Path) -> None:
@@ -143,10 +156,10 @@ def _compress_old_logs(logs_folder: Path) -> None:
 
     for log_file in logs_folder.glob(_name_format):
         log_date = parse_date_string(log_file.stem.split("_")[1]).date()
-        if current_date >= log_date:
+        if current_date == log_date:
             continue
 
-        zip_file_path = logs_folder / f"{current_date.strftime(_date_format)}.zip"
+        zip_file_path = logs_folder / f"{log_date.strftime(_date_format)}.zip"
         with zipfile.ZipFile(
             zip_file_path, mode="a", compression=zipfile.ZIP_BZIP2, compresslevel=9
         ) as zip_file:
@@ -155,7 +168,7 @@ def _compress_old_logs(logs_folder: Path) -> None:
         log_file.unlink()
 
 
-def setup_logger(logs_path: Path, debug: bool = False) -> None:
+def setup_logger(logs_path: Path) -> None:
     """
     Set up and configure the logger for the application.
 
@@ -163,6 +176,7 @@ def setup_logger(logs_path: Path, debug: bool = False) -> None:
         logs_path (Path): The directory path where log files are stored.
     """
     current_date = datetime.now().date()
+    cmd_opts = get_cmd_opts()
 
     _rename_latest_log(logs_path)
     _compress_old_logs(logs_path)
@@ -191,7 +205,7 @@ def setup_logger(logs_path: Path, debug: bool = False) -> None:
     file_formatter = LogFormatting("%(message)s", datefmt="%X")
     file_formatter._set_nocolor()
 
-    stream_handler.setLevel(logging.INFO if not debug else logging.DEBUG)
+    stream_handler.setLevel(logging.INFO if not cmd_opts.debug else logging.DEBUG)
     stream_handler.setFormatter(log_formatter)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(file_formatter)
