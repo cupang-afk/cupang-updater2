@@ -118,10 +118,13 @@ def _get_next_exec_n(logs_folder: Path) -> int:
     """
     date_files: dict[datetime, list[Path]] = {}
 
-    for log_file in logs_folder.glob("*.log"):
+    for log_file in logs_folder.glob(_name_format):
         # Gets YYYY-MM-DD part
         date = parse_date_string(log_file.stem.split("_")[1]).date()
-        date_files[date].append(log_file)
+        if not isinstance(date_files.get(date, None), list):
+            date_files[date] = [log_file]
+        else:
+            date_files[date].append(log_file)
 
     if not date_files:
         return 1
