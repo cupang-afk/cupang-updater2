@@ -2,7 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.1 - 2024-11-22
+
+### Bug Fixes
+
+- Prevent direct calls to _load_ext function ([82f559c](82f559cfaa39e2e4915c385dd20c9e59419d9b6a))
+- Fix compress logs not working properly ([bf70bf0](bf70bf0111b922c576ebe278febb92812ed723a5))
+
+### Documentation
+
+- Update `README.md` ([c65c766](c65c766c0246c58d404bc3ba5f895a5d9f3d4dd7))
+
+### Refactor
+
+- Refactor command-line options ([f1230c8](f1230c873e9f293c285da40fe5f0f78ffb661754))
+
+### Bump
+
+- Version 0.2.0 -> 0.2.1 ([]())
+
 ## 0.2.0 - 2024-11-21
+
+[6663af2](6663af2d4514fb87a9d71e9b4f547034c01d3fd7)...[7160b66](7160b66723113095c476129940c977c4a687d3b7)
 
 ### Bug Fixes
 
@@ -21,7 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.1.3 -> 0.2.0 ([]())
+- Version 0.1.3 -> 0.2.0 ([7160b66](7160b66723113095c476129940c977c4a687d3b7))
 
 ## 0.1.3 - 2024-11-20
 
