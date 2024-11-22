@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.2 - 2024-11-22
+
+### Bug Fixes
+
+- Ensure correct log file grouping by date ([540bb3d](540bb3d510324bf97fb9a37dcff4365186f846f7))
+
+### Bump
+
+- Version 0.2.1 -> 0.2.2 ([]())
+
 ## 0.2.1 - 2024-11-22
+
+[7160b66](7160b66723113095c476129940c977c4a687d3b7)...[5d88578](5d88578d2a68c45ac0bbcd02f464ca7ae645e222)
 
 ### Bug Fixes
 
@@ -19,7 +31,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.2.0 -> 0.2.1 ([]())
+- Version 0.2.0 -> 0.2.1 ([5d88578](5d88578d2a68c45ac0bbcd02f464ca7ae645e222))
 
 ## 0.2.0 - 2024-11-21
 
