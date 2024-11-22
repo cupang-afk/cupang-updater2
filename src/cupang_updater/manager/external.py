@@ -1,3 +1,4 @@
+import inspect
 import sys
 from importlib.util import module_from_spec, spec_from_file_location
 from itertools import chain
@@ -17,6 +18,10 @@ def _load_ext(name: str, path: str | Path):
         name: The name to use for the module in sys.modules
         path: The path to the python file
     """
+    caller_file = Path(inspect.stack()[1].filename)
+    if Path(__file__) != caller_file:
+        raise RuntimeError("This function is not meant to be called directly.")
+
     path = ensure_path(path)
     spec = spec_from_file_location(name, path.absolute())
     module = module_from_spec(spec)
