@@ -2,15 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.2.2 - 2024-11-22
+## 0.2.3 - 2024-12-02
 
 ### Bug Fixes
 
-- Ensure correct log file grouping by date ([540bb3d](540bb3d510324bf97fb9a37dcff4365186f846f7))
+- Fix jar check on bungee plugin ([5ebc230](5ebc23055894e93cdceedf2ea1eaa8aa9da1feb5))
 
 ### Bump
 
-- Version 0.2.1 -> 0.2.2 ([]())
+- Version 0.2.2 -> 0.2.3 ([]())
+
+## 0.2.2 - 2024-11-22
+
+[5d88578](5d88578d2a68c45ac0bbcd02f464ca7ae645e222)...[bedff0e](bedff0ee397298ea9e8bd71c36f9854caea0a741)
+
+### Bug Fixes
+
+- Ensure correct log file grouping by date ([11b758f](11b758f554d24db1d0e9d52929975333cac2fa10))
+
+### Bump
+
+- Version 0.2.1 -> 0.2.2 ([bedff0e](bedff0ee397298ea9e8bd71c36f9854caea0a741))
 
 ## 0.2.1 - 2024-11-22
 
