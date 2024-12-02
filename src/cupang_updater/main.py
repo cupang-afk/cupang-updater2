@@ -2,7 +2,7 @@ from pathlib import Path
 
 from rich.prompt import Prompt
 
-from .cmd_opts import get_cmd_opts, opt, parse_cmd
+from .cmd_opts import get_cmd_opts, parse_cmd
 from .config.config import Config
 from .downloader.downloader import setup_downloader
 from .logger.logger import get_logger, setup_logger

@@ -30,6 +30,10 @@ class JarInfo:
     version: str
     authors: list[str]
 
+    def __post_init__(self):
+        if not self.name or not self.version:
+            raise ValueError("name and version are required")
+
 
 def get_jar_info(jar_file: str | Path | IO[bytes]) -> JarInfo:
     """Extract metadata from a given jar file.
@@ -51,7 +55,7 @@ def get_jar_info(jar_file: str | Path | IO[bytes]) -> JarInfo:
         # Bukkit (including Paper)
         bukkit_files = [
             file_name
-            for file_name in ["paper-plugin.yml", "plugin.yml", "bunge.yml"]
+            for file_name in ["paper-plugin.yml", "plugin.yml", "bungee.yml"]
             if file_name in jar.namelist()
         ]
         if bukkit_files:
