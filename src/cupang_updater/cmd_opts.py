@@ -112,6 +112,16 @@ opt_downloader.add_argument(
     help="Set how many simultaneous downloads (default: %(default)s)",
 )
 opt_downloader.add_argument(
+    "-mr",
+    "--max-retries",
+    dest="max_retries",
+    action="store",
+    metavar="INT",
+    type=int,
+    default=5,
+    help="Set maximum number of retries for downloads (default: %(default)s)",
+)
+opt_downloader.add_argument(
     "--aria2c-bin",
     dest="aria2c_bin",
     action="store",

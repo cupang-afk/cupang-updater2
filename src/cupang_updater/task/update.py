@@ -26,6 +26,58 @@ from ..utils.hash import FileHash
 from ..utils.jar import get_jar_info, jar_rename
 from ..utils.rich import status_update
 
+DL_CALLBACKS = get_callbacks()
+
+
+def _handle_download(job: DownloadJob) -> bool:
+    """
+    Handles the download of a file.
+
+    Args:
+        job (DownloadJob): The download job to handle.
+
+    Returns:
+        bool: True if the download was successful, False otherwise.
+    """
+    log = get_logger()
+    is_dl_error = False
+    max_retries: int = get_cmd_opts().max_retries
+    retries = 0
+    max_wait_time = 10  # Max wait time in seconds
+
+    def _on_error(j, err):
+        DL_CALLBACKS["on_error"](j, err)
+        nonlocal is_dl_error
+        is_dl_error = True
+
+    while retries <= max_retries:
+        is_dl_error = False
+        get_downloader().dl(
+            job,
+            on_start=DL_CALLBACKS["on_start"],
+            on_finish=DL_CALLBACKS["on_finish"],
+            on_progress=DL_CALLBACKS["on_progress"],
+            on_cancel=DL_CALLBACKS["on_cancel"],
+            on_error=_on_error,
+        )
+        if not is_dl_error:
+            break
+        retries += 1
+
+        wait_time = min(max_wait_time, 2**retries - 1)
+        log.warning(
+            f"Download failed, retrying in {wait_time} seconds... (Attempt {retries}/{max_retries})"
+        )
+        time.sleep(wait_time)
+
+    if is_dl_error:
+        log.error(
+            f"Download failed after {max_retries} attempts for {job.progress_name}."
+        )
+        return False
+
+    return True
+
 
 def _handle_server_update(
     updater_list: list[type[ServerUpdater]],
@@ -52,7 +104,6 @@ def _handle_server_update(
             server_file, Hashes("a", "b", "c", "d")
         )
 
-    dl_callbacks = get_callbacks()
     resource_data = ResourceData(
         f"{server_type} ({server_file.name})",
         server_version,
@@ -80,27 +131,14 @@ def _handle_server_update(
         if not update_data:
             continue
 
-        is_dl_error = False
-
-        def _on_error(j, err):
-            dl_callbacks["on_error"](j, err)
-            nonlocal is_dl_error
-            is_dl_error = True
-
-        get_downloader().dl(
+        if not _handle_download(
             DownloadJob(
                 update_data.url,
                 server_file,
                 update_data.headers,
-                server_type,
+                server_type.capitalize(),
             ),
-            on_start=dl_callbacks["on_start"],
-            on_finish=dl_callbacks["on_finish"],
-            on_progress=dl_callbacks["on_progress"],
-            on_cancel=dl_callbacks["on_cancel"],
-            on_error=_on_error,
-        )
-        if is_dl_error:
+        ):
             return
 
         server_hash = FileHash(server_file)
@@ -135,7 +173,6 @@ def _handle_plugin_update(
     else:
         plugin_hash = FileHash.with_known_hashes(plugin_file, Hashes())
 
-    dl_callbacks = get_callbacks()
     resource_data = ResourceData(
         plugin_name,
         plugin_version,
@@ -164,27 +201,14 @@ def _handle_plugin_update(
 
         new_plugin_file = plugin_file.with_name(f"{plugin_name} [Latest].jar")
 
-        is_dl_error = False
-
-        def _on_error(j, err):
-            dl_callbacks["on_error"](j, err)
-            nonlocal is_dl_error
-            is_dl_error = True
-
-        get_downloader().dl(
+        if not _handle_download(
             DownloadJob(
                 update_data.url,
                 new_plugin_file,
                 update_data.headers,
                 plugin_name,
-            ),
-            on_start=dl_callbacks["on_start"],
-            on_finish=dl_callbacks["on_finish"],
-            on_progress=dl_callbacks["on_progress"],
-            on_cancel=dl_callbacks["on_cancel"],
-            on_error=_on_error,
-        )
-        if is_dl_error:
+            )
+        ):
             return
 
         jar_info = get_jar_info(new_plugin_file)
