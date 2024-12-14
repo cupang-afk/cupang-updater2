@@ -1,13 +1,34 @@
 import logging
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass, field
-from typing import final
+from typing import Literal, Protocol, TypeVar, final
 
+from ..cmd_opts import get_cmd_opts
 from ..logger.logger import get_logger
 from ..meta import default_headers
 from ..utils.common import parse_version
 from ..utils.hash import FileHash, Hashes
 from ..utils.url import check_content_type, make_requests, make_url
+
+T = TypeVar("T", bound="_Comparable")
+
+_compare = {
+    "==": lambda x, y: x == y,
+    "!=": lambda x, y: x != y,
+    "<": lambda x, y: x < y,
+    "<=": lambda x, y: x <= y,
+    ">": lambda x, y: x > y,
+    ">=": lambda x, y: x >= y,
+}
+
+
+class _Comparable(Protocol):
+    def __eq__(self: T, other: T) -> bool: ...
+    def __ne__(self: T, other: T) -> bool: ...
+    def __lt__(self: T, other: T) -> bool: ...
+    def __le__(self: T, other: T) -> bool: ...
+    def __gt__(self: T, other: T) -> bool: ...
+    def __ge__(self: T, other: T) -> bool: ...
 
 
 @dataclass
@@ -135,3 +156,26 @@ class UpdaterBase(metaclass=ABCMeta):
     @property
     def parse_version(self):
         return parse_version
+
+    @final
+    def has_new_version(
+        self,
+        old: _Comparable,
+        new: _Comparable,
+        op: Literal["==", "!=", "<", "<=", ">", ">="] = "<",
+    ) -> bool:
+        """
+        Check if a new version is available.
+
+        Args:
+            old (_Comparable): The old version.
+            new (_Comparable): The new version.
+            op (Literal["==", "!=", "<", "<=", ">", ">="], optional): The comparison operator.
+                Defaults to "<" but can be set to any of "==", "!=", "<", "<=", ">", ">=".
+
+        Note:
+            If `--skip-version-check` is set, this method will always return True.
+        """
+        if get_cmd_opts().skip_version_check:
+            return True
+        return _compare[op](old, new)

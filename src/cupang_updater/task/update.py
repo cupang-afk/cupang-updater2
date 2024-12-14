@@ -460,6 +460,7 @@ def update_plugin(config: Config) -> None:
                     f"[green]Update config for {plugin_name} [cyan]{new_plugin_file.name}"
                 )
 
+                # TODO: use scan logic to update config
                 _handle_plugin_meta_update(
                     config, plugin_name, new_plugin_file, resource_data
                 )

@@ -40,7 +40,7 @@ class BungeeUpdater(ServerUpdater):
         api = JenkinsAPI(self.api)
         local_build_number = self.updater_config.server_config["build_number"] or 0
         remote_build_number = api.get_build_number()
-        if local_build_number >= remote_build_number:
+        if not self.has_new_version(local_build_number, remote_build_number):
             return
 
         url = api.get_artifact_url("BungeeCord")

@@ -48,6 +48,14 @@ opt_main.add_argument(
     help="Force to update leftover plugins (default: %(default)s)",
 )
 opt_main.add_argument(
+    "-sv",
+    "--skip-version-check",
+    dest="skip_version_check",
+    action="store_true",
+    default=False,
+    help="Skip version check, ultimately re-download server/plugins (default: %(default)s)",
+)
+opt_main.add_argument(
     "-sc",
     "--scan-only",
     dest="scan_only",

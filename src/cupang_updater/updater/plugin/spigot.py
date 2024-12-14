@@ -62,8 +62,8 @@ class SpigotUpdater(PluginUpdater):
             return
 
         local_version = self.parse_version(self.plugin_data.version)
-        remote_version = str(self._get_version(resource_id))
-        if local_version >= self.parse_version(remote_version):
+        remote_version = self.parse_version(str(self._get_version(resource_id)))
+        if not self.has_new_version(local_version, remote_version):
             return
 
         is_premium = self._is_premium(resource_id)

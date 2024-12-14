@@ -78,7 +78,7 @@ class BukkitUpdater(PluginUpdater):
 
         local_md5 = self.plugin_data.hashes.md5
         remote_md5 = latest_data.get("md5")
-        if local_md5 == remote_md5:
+        if not self.has_new_version(local_md5, remote_md5, "!="):
             return
 
         url = latest_data.get("downloadUrl")

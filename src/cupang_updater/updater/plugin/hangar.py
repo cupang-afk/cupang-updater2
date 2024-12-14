@@ -104,8 +104,8 @@ class HangarUpdater(PluginUpdater):
 
         # Compare local and remote versions
         local_version = self.parse_version(self.plugin_data.version)
-        remote_version = str(update_data["name"])
-        if local_version >= self.parse_version(remote_version):
+        remote_version = self.parse_version(str(update_data["name"]))
+        if not self.has_new_version(local_version, remote_version):
             return
 
         url = self.make_url(

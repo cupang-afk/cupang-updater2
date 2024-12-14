@@ -52,6 +52,7 @@ def scan_plugins(config: Config) -> None:
     # updating YAML object directly is too slow
     # instead we create a new dict object that hold {plugin_name: YAML}
     # and use it to add new plugins
+    # TODO: need to figure how to put this into update task
     if config.data["plugins"]:
         plugins_config: sy.YAML = sy.load(
             config.strictyaml["plugins"].as_yaml(),

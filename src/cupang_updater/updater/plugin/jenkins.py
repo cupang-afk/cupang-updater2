@@ -60,7 +60,7 @@ class JenkinsUpdater(PluginUpdater):
             self.updater_config.plugin_config.get("build_number", 0) or 0
         )
         remote_build_number = api.get_build_number()
-        if local_build_number >= remote_build_number:
+        if not self.has_new_version(local_build_number, remote_build_number):
             return
 
         url = api.get_artifact_url(name_regex)

@@ -59,7 +59,7 @@ class PaperUpdater(ServerUpdater):
 
         local_sha256 = self.server_data.hashes.sha256
         remote_sha256 = update_data["downloads"]["application"]["sha256"]
-        if local_sha256 == remote_sha256:
+        if not self.has_new_version(local_sha256, remote_sha256, "!="):
             return
 
         remote_build_number = update_data["build"]

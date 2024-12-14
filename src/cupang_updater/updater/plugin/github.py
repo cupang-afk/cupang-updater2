@@ -87,7 +87,7 @@ class GithubUpdater(PluginUpdater):
         if compare_to == "commit":
             local_commit = self.updater_config.plugin_config.get("commit")
             remote_commit = api.get_commit()
-            if local_commit == remote_commit:
+            if not self.has_new_version(local_commit, remote_commit, "!="):
                 return
             commit = remote_commit
         else:
@@ -101,7 +101,7 @@ class GithubUpdater(PluginUpdater):
                     remote_version = self.parse_version(api.get_file_name(name_regex))
                 case _:
                     remote_version = self.parse_version("1.0")
-            if local_version >= remote_version:
+            if not self.has_new_version(local_version, remote_version):
                 return
 
         url = api.get_asset_url(name_regex)
