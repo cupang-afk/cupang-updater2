@@ -52,14 +52,22 @@ def _handle_download(job: DownloadJob) -> bool:
 
     while retries <= max_retries:
         is_dl_error = False
-        get_downloader().dl(
-            job,
-            on_start=DL_CALLBACKS["on_start"],
-            on_finish=DL_CALLBACKS["on_finish"],
-            on_progress=DL_CALLBACKS["on_progress"],
-            on_cancel=DL_CALLBACKS["on_cancel"],
-            on_error=_on_error,
-        )
+        try:
+            get_downloader().dl(
+                job,
+                on_start=DL_CALLBACKS["on_start"],
+                on_finish=DL_CALLBACKS["on_finish"],
+                on_progress=DL_CALLBACKS["on_progress"],
+                on_cancel=DL_CALLBACKS["on_cancel"],
+                on_error=_on_error,
+            )
+        except Exception:
+            # Catch unexpected errors that occur after the download is finished
+            # This might be due to a bug in the cupang-downloader module
+            # We don't want to retry in this case, so we cancel the retries and skip this error
+            log.exception(f"Error while downloading {job.progress_name}")
+            retries = max_retries
+            is_dl_error = False
         if not is_dl_error:
             break
         retries += 1
