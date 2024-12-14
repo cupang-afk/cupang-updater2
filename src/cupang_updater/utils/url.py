@@ -66,7 +66,7 @@ def make_requests(
     except (urllib.error.URLError, urllib.error.HTTPError) as e:
         msg = f'Error while requesting data from "{url}" {type(e).__qualname__}: {e}'
         try:
-            get_logger().info(msg)
+            get_logger().error(msg)
         except RuntimeError:
             print(msg)
         return
