@@ -126,7 +126,8 @@ class HangarUpdater(PluginUpdater):
                 ]
             ):
                 self.log.error(
-                    f"When checking update for {self.plugin_data.name}, got {url} but its not a file"
+                    f"When checking update for {self.plugin_data.name}, "
+                    + f"got {url} but its not a file"
                 )
                 return
 

@@ -55,13 +55,15 @@ class JenkinsAPI:
 
     def _get_artifact(self, name_regex: re.Pattern) -> str | None:
         """
-        Retrieve the first artifact matching the provided name regex from the latest build data.
+        Retrieve the first artifact matching the provided name regex
+            from the latest build data.
 
         Args:
             name_regex (re.Pattern): The regex pattern to match the artifact name.
 
         Returns:
-            str | None: The matching artifact's information, or None if no match is found.
+            str | None: The matching artifact's information, or None if
+                no match is found.
         """
         latest_data = self._get_latest_data()
         if not latest_data:
@@ -86,7 +88,8 @@ class JenkinsAPI:
 
     def get_artifact_url(self, name_regex: str) -> str | None:
         """
-        Retrieve the URL of the first artifact matching the provided name regex from the latest build.
+        Retrieve the URL of the first artifact matching the provided name regex
+        from the latest build.
 
         Args:
             name_regex (str): The regex pattern to match the artifact name.

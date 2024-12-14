@@ -130,8 +130,8 @@ def jar_rename(
         Path: The new path of the renamed jar file.
 
     Notes:
-        If remote_connection is provided, the jar file will be renamed on the remote storage.
-        so jar_path must be provided as a remote path.
+        If remote_connection is provided, the jar file will be renamed on
+        the remote storage. so jar_path must be provided as a remote path.
         Return value is a remote path but wrapped as Path object.
     """
     jar_path = ensure_path(jar_path)

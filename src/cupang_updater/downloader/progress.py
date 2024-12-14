@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from threading import Lock
-from typing import Callable
 
 from cupang_downloader import DownloadJob
 from rich.progress import Progress, TaskID, TransferSpeedColumn
@@ -54,7 +54,9 @@ def _on_start(j: DownloadJob):
     """
     Callred when a download job starts downloading.
 
-    This function creates a new progress bar in the progress tracker for the given download job.
+    This function creates a new progress bar in the progress tracker
+    for the given download job.
+
     The progress bar is not visible until the download job starts.
 
     Args:
@@ -71,7 +73,8 @@ def _on_finish(j: DownloadJob):
     """
     Called when a download job finishes downloading.
 
-    This function removes the progress bar for the given download job from the progress tracker.
+    This function removes the progress bar for the given download job
+    from the progress tracker.
 
     Args:
         j (DownloadJob): The download job that finished downloading.
@@ -86,7 +89,8 @@ def _on_progress(j: DownloadJob, t: int, d: int, **extra):
     """
     Called when a download job sends a progress update.
 
-    This function updates the progress bar for the given download job in the progress tracker.
+    This function updates the progress bar for the given download job
+    in the progress tracker.
 
     Args:
         j (DownloadJob): The download job that sent the progress update.
@@ -104,7 +108,8 @@ def _on_cancel(j: DownloadJob):
     """
     Called when a download job is canceled.
 
-    This function removes the progress bar for the given download job from the progress tracker.
+    This function removes the progress bar for the given download job
+    from the progress tracker.
 
     Args:
         j (DownloadJob): The download job that was canceled.
@@ -120,8 +125,8 @@ def _on_error(j: DownloadJob, err):
     """
     Called when a download job encounters an error.
 
-    This function logs an error message and removes the progress bar for the given download job
-    from the progress tracker.
+    This function logs an error message and removes the progress bar
+    for the given download job from the progress tracker.
 
     Args:
         j (DownloadJob): The download job that encountered an error.

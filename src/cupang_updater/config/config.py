@@ -23,11 +23,14 @@ class Config:
         """Load configuration from a file.
 
         Args:
-            file: The path to the configuration file. If not provided, use the default configuration.
-            _default: The default configuration as a string. If not provided, use the default configuration.
+            file: The path to the configuration file.
+                If not provided, use the default configuration.
+            _default: The default configuration as a string.
+                If not provided, use the default configuration.
 
         Raises:
-            FileNotFoundError: If the file does not exist and no default configuration is provided.
+            FileNotFoundError: If the file does not exist
+                and no default configuration is provided.
         """
         file = ensure_path(file) if file else None
         self._config_path = file
@@ -55,7 +58,8 @@ class Config:
 
         Args:
             file (str | Path, optional): The path to the file where the configuration
-                should be saved. If not provided, saves to the previously loaded configuration path.
+                should be saved.
+                If not provided, saves to the previously loaded configuration path.
         """
         file = ensure_path(file) if file else self._config_path
         file.write_text(self._config.as_yaml(), encoding="utf-8")

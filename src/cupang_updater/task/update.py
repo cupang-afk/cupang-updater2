@@ -64,7 +64,8 @@ def _handle_download(job: DownloadJob) -> bool:
         except Exception:
             # Catch unexpected errors that occur after the download is finished
             # This might be due to a bug in the cupang-downloader module
-            # We don't want to retry in this case, so we cancel the retries and skip this error
+            # We don't want to retry in this case,
+            # so we cancel the retries and skip this error
             log.exception(f"Error while downloading {job.progress_name}")
             retries = max_retries
             is_dl_error = False
@@ -74,7 +75,8 @@ def _handle_download(job: DownloadJob) -> bool:
 
         wait_time = min(max_wait_time, 2**retries - 1)
         log.warning(
-            f"Download failed, retrying in {wait_time} seconds... (Attempt {retries}/{max_retries})"
+            f"Download failed, retrying in {wait_time} seconds... "
+            + f"(Attempt {retries}/{max_retries})"
         )
         time.sleep(wait_time)
 
@@ -150,11 +152,8 @@ def _handle_server_update(
             return
 
         server_hash = FileHash(server_file)
-
-        server_hash.md5
-        server_hash.sha1
-        server_hash.sha256
-        server_hash.sha512
+        for h in ["md5", "sha1", "sha256", "sha512"]:
+            server_hash._get_hash(h)
         resource_data.hashes = server_hash._hashes
 
         return updater.get_config_path(), resource_data, updater.get_config_update()
@@ -222,11 +221,8 @@ def _handle_plugin_update(
         jar_info = get_jar_info(new_plugin_file)
         new_plugin_file = jar_rename(new_plugin_file, jar_info)
         plugin_hash = FileHash(new_plugin_file)
-
-        plugin_hash.md5
-        plugin_hash.sha1
-        plugin_hash.sha256
-        plugin_hash.sha512
+        for h in ["md5", "sha1", "sha256", "sha512"]:
+            plugin_hash._get_hash(h)
 
         resource_data.version = jar_info.version
         resource_data.hashes = plugin_hash
@@ -319,7 +315,8 @@ def update_server(config: Config) -> None:
                 config_path, resource_data, server_config_update = result
                 server_hash = resource_data.hashes
 
-                # Updating the server config is somewhat unique, as we only perform updates for build_number and hashes
+                # Updating the server config is somewhat unique,
+                # as we only perform updates for build_number and hashes
                 config.set(
                     "server.build_number",
                     server_config_update.server_config.get("build_number", 0) or 0,
@@ -350,7 +347,8 @@ def update_server(config: Config) -> None:
             status_update(status, "Finished Updating Server")
 
 
-def update_plugin(config: Config) -> None:
+# someday, would refactore this
+def update_plugin(config: Config) -> None:  # noqa: C901
     """
     Update the plugins based on the given configuration.
 
@@ -375,7 +373,8 @@ def update_plugin(config: Config) -> None:
 
         if not plugins_folder.exists():
             log.error(
-                f"I don't know how you do it, but your {plugins_folder} is missing for some reason"
+                "I don't know how you do it, "
+                + f"but your {plugins_folder} is missing for some reason"
             )
             return 1
 
@@ -398,16 +397,15 @@ def update_plugin(config: Config) -> None:
                     log.warning(f"Plugin {plugin_name} is excluded, skipping")
                     continue
 
-                if not cmd_opts.force_leftover_update:
-                    if not (
-                        remote_connection.exists(
-                            Path(remote_plugins_folder, old_plugin.name).as_posix()
-                        )
-                        if is_remote
-                        else old_plugin.exists()
-                    ):
-                        log.warning(f"Plugin {plugin_name} is a leftover, skipping")
-                        continue
+                if not cmd_opts.force_leftover_update and not (
+                    remote_connection.exists(
+                        Path(remote_plugins_folder, old_plugin.name).as_posix()
+                    )
+                    if is_remote
+                    else old_plugin.exists()
+                ):
+                    log.warning(f"Plugin {plugin_name} is a leftover, skipping")
+                    continue
 
                 jobs.append(
                     worker.submit(
@@ -450,7 +448,8 @@ def update_plugin(config: Config) -> None:
                     except Exception:
                         log.warning(
                             "Failed to remove old plugin from remote storage, "
-                            + f"make sure to delete them manually: [bold]{plugin_name} [cyan]{old_plugin.name}"
+                            + f"make sure to delete them manually: [bold]{plugin_name} "
+                            + f"[cyan]{old_plugin.name}"
                         )
 
                     log.info(f"[green]Uploading {new_plugin_file.name}")
@@ -465,7 +464,8 @@ def update_plugin(config: Config) -> None:
                         old_plugin.unlink(missing_ok=True)
 
                 log.info(
-                    f"[green]Update config for {plugin_name} [cyan]{new_plugin_file.name}"
+                    f"[green]Update config for {plugin_name} "
+                    + f"[cyan]{new_plugin_file.name}"
                 )
 
                 # TODO: use scan logic to update config
@@ -503,7 +503,8 @@ def update_all(config: Config) -> None:
             # Calculate the remaining time
             remaining = (last_update + cooldown) - today
             log.info(
-                f"Updater still in cooldown, {round(remaining.total_seconds() / 3600)} hours remaining"
+                "Updater still in cooldown, "
+                + f"{round(remaining.total_seconds() / 3600)} hours remaining"
             )
             return
 

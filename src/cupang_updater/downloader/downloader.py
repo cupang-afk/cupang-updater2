@@ -78,7 +78,8 @@ def setup_downloader():
                 _setup_fallback_downloader()
     except Exception as e:
         log.error(
-            f"Failed to setup downloader {cmd_opts.downloader} because {type(e).__qualname__}: {e}"
+            f"Failed to setup downloader {cmd_opts.downloader} "
+            + f"because {type(e).__qualname__}: {e}"
         )
         _setup_fallback_downloader()
 

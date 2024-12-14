@@ -55,7 +55,7 @@ class DownloadInfo:
 
     Attributes:
         url (str): The URL of the file.
-        headers (dict[str, str], optional): Additional HTTP headers to send with the request.
+        headers (dict[str, str], optional): Additional HTTP headers to send.
     """
 
     url: str
@@ -120,7 +120,8 @@ class UpdaterBase(metaclass=ABCMeta):
         Retrieve the latest update information for the plugin/server.
 
         Returns:
-            DownloadInfo | None: The latest update information, or None if update is not available or an error occurred.
+            DownloadInfo | None: The latest update information, or None if update
+                is not available or an error occurred.
         """
         ...
 
@@ -170,8 +171,10 @@ class UpdaterBase(metaclass=ABCMeta):
         Args:
             old (_Comparable): The old version.
             new (_Comparable): The new version.
-            op (Literal["==", "!=", "<", "<=", ">", ">="], optional): The comparison operator.
-                Defaults to "<" but can be set to any of "==", "!=", "<", "<=", ">", ">=".
+            op (Literal["==", "!=", "<", "<=", ">", ">="], optional):
+                The comparison operator.
+                Defaults to "<" but can be set to any of
+                "==", "!=", "<", "<=", ">", ">=".
 
         Note:
             If `--skip-version-check` is set, this method will always return True.

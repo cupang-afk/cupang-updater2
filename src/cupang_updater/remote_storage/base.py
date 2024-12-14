@@ -2,6 +2,14 @@ from abc import ABCMeta, abstractmethod
 from typing import IO, final
 
 
+class RemotePathIsExistsError(Exception):
+    pass
+
+
+class RemotePathNotFoundError(Exception):
+    pass
+
+
 class RemoteIO(metaclass=ABCMeta):
     @final
     @property

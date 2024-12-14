@@ -1,18 +1,19 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import dateutil.parser
 
 _current_tzinfo = datetime.now().astimezone().tzinfo
-_utc_tzinfo = timezone.utc
 
 
 def parse_date_string(date_string: str, tz_info=_current_tzinfo) -> datetime:
     """
-    Parse a date string into a datetime object, and set the timezone to tz_info if given.
+    Parse a date string into a datetime object,
+    and set the timezone to tz_info if given.
 
     Args:
         date_string (str): The date string to parse.
-        tz_info (datetime.tzinfo): The timezone to set in the datetime object (default is the current system timezone).
+        tz_info (datetime.tzinfo): The timezone to set in the datetime object
+            (default is the current system timezone).
 
     Returns:
         datetime: The parsed datetime object in the specified timezone.
@@ -26,7 +27,8 @@ def parse_date_timestamp(timestamp: int, tz_info=_current_tzinfo) -> datetime:
 
     Args:
         timestamp (int): The timestamp to parse.
-        tz_info (datetime.tzinfo): The timezone to set in the datetime object (default is the current system timezone).
+        tz_info (datetime.tzinfo): The timezone to set in the datetime object
+            (default is the current system timezone).
 
     Returns:
         datetime: The parsed datetime object in the specified timezone.
@@ -40,7 +42,8 @@ def parse_date_datetime(date: datetime, tz_info=_current_tzinfo) -> datetime:
 
     Args:
         date (datetime): The datetime object to parse.
-        tz_info (datetime.tzinfo): The timezone to set in the datetime object (default is the current system timezone).
+        tz_info (datetime.tzinfo): The timezone to set in the datetime object
+            (default is the current system timezone).
 
     Returns:
         datetime: The parsed datetime object in the specified timezone.
@@ -58,4 +61,4 @@ def parse_date_utc(date: datetime) -> datetime:
     Returns:
         datetime: The parsed datetime object in the UTC timezone.
     """
-    return date.astimezone(_utc_tzinfo)
+    return date.astimezone(UTC)

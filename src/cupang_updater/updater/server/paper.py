@@ -104,7 +104,8 @@ class PaperUpdater(ServerUpdater):
                 ]
             ):
                 self.log.error(
-                    f"When checking update for {self.get_updater_name()}, got {url} but its not a file"
+                    f"When checking update for {self.get_updater_name()}, "
+                    + f"got {url} but its not a file"
                 )
                 return
 

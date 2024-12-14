@@ -34,7 +34,8 @@ def ext_register(*ext_paths: str | Path):
     Register external updaters.
 
     Args:
-        *ext_paths: str or Path, the paths to the python files containing the external updaters
+        *ext_paths: str or Path, the paths to the python files containing
+            the external updaters
     """
     global _is_registered
     log = get_logger()

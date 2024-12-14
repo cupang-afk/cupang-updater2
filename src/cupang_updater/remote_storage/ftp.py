@@ -7,15 +7,7 @@ from typing import IO
 
 from ..meta import get_appdir
 from ..utils.common import ensure_path
-from .base import RemoteIO
-
-
-class FTPPathNotFoundError(Exception):
-    pass
-
-
-class FTPPathIsExists(Exception):
-    pass
+from .base import RemoteIO, RemotePathIsExistsError, RemotePathNotFoundError
 
 
 class FTPStorage(RemoteIO):
@@ -71,7 +63,7 @@ class FTPStorage(RemoteIO):
     def remove(self, path: str):
         path = ensure_path(path).as_posix()
         if not self.exists(path):
-            raise FTPPathNotFoundError
+            raise RemotePathNotFoundError(path)
         _need_to_delete = []
         _need_to_delete.append(path)
         if self.is_dir(path):
@@ -98,7 +90,7 @@ class FTPStorage(RemoteIO):
             if exists_ok:
                 return
             else:
-                raise FTPPathIsExists(path)
+                raise RemotePathIsExistsError(path)
         if parents:
             parent_dir = ensure_path(path)
             for parent in parent_dir.parents[::-1]:

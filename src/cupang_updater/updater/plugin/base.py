@@ -44,7 +44,8 @@ class PluginUpdaterConfig:
 
     Attributes:
         common_config (dict[str, Any]): Common configuration for the plugin updater.
-        plugin_config (dict[str, Any]): Plugin-specific configuration for the plugin updater.
+        plugin_config (dict[str, Any]): Plugin-specific configuration for
+            the plugin updater.
     """
 
     common_config: dict[str, Any] = field(default=None)

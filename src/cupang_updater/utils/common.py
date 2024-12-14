@@ -59,10 +59,7 @@ def parse_version(version: str) -> Version:
         _version = Version(version).base_version
     except InvalidVersion:
         _match_version = re.search(r"([\d.]+)", version)
-        if not _match_version:
-            _version = "1.0"
-        else:
-            _version = "".join(_match_version.group(1))
+        _version = "1.0" if not _match_version else "".join(_match_version.group(1))
     except Exception:
         _version = "1.0"
     return Version(_version)

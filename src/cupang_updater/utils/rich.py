@@ -11,10 +11,11 @@ def status_update(status: Status, msg: str, level: str = "info", no_log: bool = 
         status (Status): The rich status object to update.
         msg (str): The message to set in the status update.
         level (str, optional): The logging level to use. Defaults to "info".
-        no_log (bool, optional): If True, the message will not be logged. Defaults to False.
+        no_log (bool, optional): If True, the message will not be logged.
+            Defaults to False.
     """
     status.update(msg)
     if no_log:
         return
     log = get_logger()
-    getattr(log, level, getattr(log, "info"))(msg)
+    getattr(log, level, log.info)(msg)

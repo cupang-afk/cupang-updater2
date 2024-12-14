@@ -23,7 +23,8 @@ class ModrinthList(sy.Str):
         val = chunk.contents
         if not self.is_valid_list(val):
             chunk.expecting_but_found(
-                "when expecting string, or a valid list for example \"['paper', 'folia']\","
+                "when expecting string, "
+                "or a valid list for example \"['paper', 'folia']\","
                 " also remember to encapsulate it in quotes"
             )
         return val
@@ -71,9 +72,11 @@ class ModrinthUpdater(PluginUpdater):
             plugin_default="""\
                 # id: https://modrinth.com/plugin/[your project id here]
                 # name_regex: a regex search for the file name, example "Geyser-Spigot"
-                # loaders: (optional) example paper, or for many loaders ["paper", "folia"]
-                # game_versions: (optional) example 1.20.4, or for many game_versions ["1.20.4", "1.18.2"]
-                # version_type: release, beta, or alpha
+                # loaders: (optional) example paper, or for many loaders \
+            ["paper", "folia"]
+                # game_versions: (optional) example 1.20.4, or for many game_versions \
+            ["1.20.4", "1.18.2"]
+                # version_type: release,     beta, or alpha
                 id:
                 name_regex:
                 loaders:
@@ -179,7 +182,8 @@ class ModrinthUpdater(PluginUpdater):
                 ]
             ):
                 self.log.error(
-                    f"When checking update for {self.plugin_data.name}, got {url} but its not a file"
+                    f"When checking update for {self.plugin_data.name}, "
+                    + f"got {url} but its not a file"
                 )
                 return
 

@@ -97,7 +97,8 @@ def get_server_types() -> list[str]:
     Retrieve a list of all server types supported by the registered server updaters.
 
     Returns:
-        list[str]: A sorted list of all server types supported by the registered server updaters.
+        list[str]: A sorted list of all server types supported by
+            the registered server updaters.
     """
     result = list(set(x for y in _updaters.values() for x in y))
     result.sort()
@@ -112,7 +113,8 @@ def get_server_updaters(server_type: str) -> list[type[ServerUpdater]]:
         server_type (str): The server type to retrieve the updaters for.
 
     Returns:
-        list[type[ServerUpdater]]: A list of all server updaters that support the given server type.
+        list[type[ServerUpdater]]: A list of all server updaters that support
+            the given server type.
     """
     result = list(
         filter(

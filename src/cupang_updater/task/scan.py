@@ -18,7 +18,8 @@ from ..utils.jar import get_jar_info, jar_rename
 from ..utils.rich import status_update
 
 
-def scan_plugins(config: Config) -> None:
+# someday, would refactore this
+def scan_plugins(config: Config) -> None:  # noqa: C901
     """
     Scans the plugins directory.
 
@@ -64,7 +65,7 @@ def scan_plugins(config: Config) -> None:
         )
     if plugins_config.data:
         _ = {}
-        for k in plugins_config.data.keys():
+        for k in plugins_config.data:
             _[k] = plugins_config[k]
         plugins_config = _
     else:
@@ -104,18 +105,14 @@ def scan_plugins(config: Config) -> None:
                     remote_connection.downloadfo(jar, f)
                     f.seek(0)
                     file_hash = FileHash(f)
-                    file_hash.md5
-                    file_hash.sha1
-                    file_hash.sha256
-                    file_hash.sha512
+                    for h in ["md5", "sha1", "sha256", "sha512"]:
+                        file_hash._get_hash(h)
                     f.seek(0)
                     jar_info = get_jar_info(f)
             else:
                 file_hash = FileHash(jar)
-                file_hash.md5
-                file_hash.sha1
-                file_hash.sha256
-                file_hash.sha512
+                for h in ["md5", "sha1", "sha256", "sha512"]:
+                    file_hash._get_hash(h)
                 jar_info = get_jar_info(jar)
 
             status_update(status, f"Scanning plugins {jar_info.name}", no_log=True)
@@ -130,7 +127,8 @@ def scan_plugins(config: Config) -> None:
                     remote_connection if is_remote else None,
                 )
                 log.info(
-                    f"[green]Renaming [cyan]{Path(jar).name} [green]-> [cyan]{new_jar.name}"
+                    f"[green]Renaming [cyan]{Path(jar).name} "
+                    + f"[green]-> [cyan]{new_jar.name}"
                 )
                 jar = new_jar
 
@@ -189,7 +187,7 @@ def scan_plugins(config: Config) -> None:
             status_update(status, "Finished removing plugins")
 
         status_update(status, "Fixing Config")
-        for name in plugins_config.keys():
+        for name in plugins_config:
             fix_config(
                 plugins_config[name],
                 get_plugin_default(),

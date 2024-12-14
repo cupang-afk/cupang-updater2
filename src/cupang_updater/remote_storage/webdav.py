@@ -6,19 +6,7 @@ from typing import IO, Literal
 from webdav3.client import Client
 
 from ..utils.common import ensure_path
-from .base import RemoteIO
-
-
-class WebdavError(Exception):
-    pass
-
-
-class WebdavPathNotFoundError(Exception):
-    pass
-
-
-class WebdavPathIsExists(Exception):
-    pass
+from .base import RemoteIO, RemotePathIsExistsError, RemotePathNotFoundError
 
 
 class WebdavStorage(RemoteIO):
@@ -68,7 +56,7 @@ class WebdavStorage(RemoteIO):
     def remove(self, path: str):
         path = ensure_path(path).as_posix()
         if not self.exists(path):
-            raise WebdavPathNotFoundError
+            raise RemotePathNotFoundError(path)
         _need_to_delete = []
         _need_to_delete.append(path)
         if self.is_dir(path):
@@ -87,7 +75,7 @@ class WebdavStorage(RemoteIO):
             if exists_ok:
                 return
             else:
-                raise WebdavPathIsExists(path)
+                raise RemotePathIsExistsError(path)
         if parents:
             parent_dir = ensure_path(path)
             for parent in parent_dir.parents[::-1]:
@@ -106,7 +94,7 @@ class WebdavStorage(RemoteIO):
 
     def is_dir(self, path: str) -> bool:
         if not self.exists(path):
-            raise WebdavPathNotFoundError(path)
+            raise RemotePathNotFoundError(path)
         return self._dav.is_dir(path)
 
     def is_file(self, path: str) -> bool:
@@ -153,7 +141,7 @@ class WebdavStorage(RemoteIO):
             if self.is_dir(path):
                 (to_local_path / relative_path).mkdir(parents=True, exist_ok=True)
             else:
-                self._dav.download(path, str((to_local_path / relative_path)))
+                self._dav.download(path, str(to_local_path / relative_path))
 
     def uploadfo(self, stream: IO[bytes], to_remote_path: str):
         to_remote_path = ensure_path(to_remote_path).as_posix()

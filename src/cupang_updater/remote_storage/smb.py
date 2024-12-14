@@ -6,15 +6,7 @@ import smbclient
 from smbprotocol.exceptions import SMBException
 
 from ..utils.common import ensure_path
-from .base import RemoteIO
-
-
-class SMBPathNotFoundError(Exception):
-    pass
-
-
-class SMBPathIsExists(Exception):
-    pass
+from .base import RemoteIO, RemotePathIsExistsError, RemotePathNotFoundError
 
 
 class SMBStorage(RemoteIO):
@@ -91,7 +83,7 @@ class SMBStorage(RemoteIO):
     def remove(self, path: str):
         path = self._ensure_unc_path(path)
         if not self.exists(path):
-            raise SMBPathNotFoundError
+            raise RemotePathNotFoundError(path)
         _need_to_delete = []
         _need_to_delete.append(path)
         if self.is_dir(path):
@@ -109,7 +101,8 @@ class SMBStorage(RemoteIO):
             path = self._ensure_unc_path(path)
             if len(Path(path).parts) == 1:
                 # smbclient needs \\server\share
-                # Path supports smb path and it will return 1 part if path is \\server\share
+                # Path supports smb path
+                # and it will return 1 part if path is \\server\share
                 # and \\server\share must exists
                 return True
             for i in smbclient.scandir(
@@ -133,7 +126,7 @@ class SMBStorage(RemoteIO):
             if exists_ok:
                 return
             else:
-                raise SMBPathIsExists(path)
+                raise RemotePathIsExistsError(path)
         if parents:
             parent_dir = ensure_path(path)
             for parent in parent_dir.parents[::-1]:

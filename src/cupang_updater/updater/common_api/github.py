@@ -13,8 +13,10 @@ class GithubAPI:
 
         Args:
             repo (str): The name of the Github repository, e.g. "EssentialsX/Essentials"
-            prerelease (bool, optional): Whether to include prereleases in the query. Defaults to False.
-            token (str, optional): The Github API token to use for authentication. Defaults to None.
+            prerelease (bool, optional): Whether to include prereleases in the query.
+                Defaults to False.
+            token (str, optional): The Github API token to use for authentication.
+                Defaults to None.
         """
 
         self.repo = repo
@@ -34,7 +36,8 @@ class GithubAPI:
         Get the list of releases for the given repository.
 
         Returns:
-            list[dict[str, Any]] | None: The list of release data, or None if an error occurred.
+            list[dict[str, Any]] | None: The list of release data, or None if an error
+                occurred.
         """
         res = make_requests(
             make_url(self.api, "repos", self.repo, "releases"), headers=self.headers
@@ -48,7 +51,8 @@ class GithubAPI:
         Get the latest release for the given repository.
 
         Returns:
-            dict[str, Any] | None: The latest release data, or None if an error occurred.
+            dict[str, Any] | None: The latest release data, or None if an error
+                occurred.
         """
         if self.latest_data:
             return self.latest_data

@@ -65,7 +65,8 @@ def get_server_updater_settings_schema() -> dict[str, MapValidator]:
     Get the schema for the server updater settings.
 
     Returns:
-        dict[str, MapValidator]: A dictionary where the key is the path in the settings and the value is the schema for that path.
+        dict[str, MapValidator]: A dictionary where the key is the path in the settings
+            and the value is the schema for that path.
     """
     return _server_updater_settings_schema
 
@@ -75,7 +76,8 @@ def get_plugin_updater_settings_schema() -> dict[str, MapValidator]:
     Get the schema for the plugin updater settings.
 
     Returns:
-        dict[str, MapValidator]: A dictionary where the key is the path in the settings and the value is the schema for that path.
+        dict[str, MapValidator]: A dictionary where the key is the path in the settings
+            and the value is the schema for that path.
     """
     return _plugin_updater_settings_schema
 
@@ -85,7 +87,8 @@ def get_server_schema() -> dict[str, sy.Validator]:
     Get the schema for the server configuration.
 
     Returns:
-        dict[str, sy.Validator]: A dictionary where the key is the server configuration field and the value is the corresponding validator.
+        dict[str, sy.Validator]: A dictionary where the key is the server configuration
+            field and the value is the corresponding validator.
     """
     return _server_schema
 
@@ -95,7 +98,8 @@ def get_plugin_schema() -> dict[str, sy.Validator]:
     Get the schema for the plugin configuration.
 
     Returns:
-        dict[str, sy.Validator]: A dictionary where the key is the plugin configuration field and the value is the corresponding validator.
+        dict[str, sy.Validator]: A dictionary where the key is the plugin configuration
+            field and the value is the corresponding validator.
     """
 
     return _plugin_schema
@@ -117,7 +121,8 @@ def get_config_schema() -> sy.Map:
             # updater_settings is dynamic
             "updater_settings": sy.Map(
                 {
-                    # using sy.MapCombined as a safe guard in case the updater is fail to register
+                    # using sy.MapCombined as a safe guard
+                    # in case the updater is fail to register
                     "server": sy.EmptyDict()
                     | sy.MapCombined(
                         _server_updater_settings_schema,
@@ -137,7 +142,8 @@ def get_config_schema() -> sy.Map:
             "plugins": sy.EmptyDict()
             | sy.MapPattern(
                 sy.Str(),
-                # using sy.MapCombined as a safe guard in case the updater is fail to register
+                # using sy.MapCombined as a safe guard
+                # in case the updater is fail to register
                 sy.MapCombined(
                     _plugin_schema,
                     sy.Str(),
@@ -149,4 +155,5 @@ def get_config_schema() -> sy.Map:
 
 
 # FOOT NOTE
-# this schema is managed by cupang_updater.manager module (for dynamicaly updating schema)
+# this schema is managed by cupang_updater.manager module
+# (for dynamicaly updating schema)

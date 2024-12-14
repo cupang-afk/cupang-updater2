@@ -17,11 +17,13 @@ class LogFormatting(logging.Formatter):
     """
     A formatter that adds a color prefix to the log message depending on the log level.
 
-    If the `no_color` attribute is set to True, the color prefix will be removed from the message.
+    If the `no_color` attribute is set to True, the color prefix will be removed
+    from the message.
 
     Attributes:
         colors (dict): A dictionary of log levels to color prefixes.
-        no_color (bool): Whether to add a color prefix to the message. Defaults to False.
+        no_color (bool): Whether to add a color prefix to the message.
+            Defaults to False.
 
     Methods:
         format(record: logging.LogRecord) -> str: Format the message of the log record.
@@ -76,10 +78,12 @@ class LogFormatting(logging.Formatter):
         Format the message of the log record.
 
         The formatter will add a color prefix to the message depending on the log level.
-        If the logger name is not the root logger, it will be added to the message in the format
-        of "[logger.name] message" with a bright blue color.
 
-        If the `no_color` attribute is set to True, the color prefix will be removed from the message.
+        If the logger name is not the root logger, it will be added to
+        the message in the format of "[logger.name] message" with a bright blue color.
+
+        If the `no_color` attribute is set to True, the color prefix will be removed
+        from the message.
         """
         no_color = getattr(self, "no_color", False)
         color_prefix = self.colors.get(record.levelno, "[default on default]")
@@ -121,7 +125,7 @@ def _get_next_exec_n(logs_folder: Path) -> int:
     for log_file in logs_folder.glob(_name_format):
         # Gets YYYY-MM-DD part
         date = parse_date_string(log_file.stem.split("_")[1]).date()
-        if not isinstance(date_files.get(date, None), list):
+        if not isinstance(date_files.get(date), list):
             date_files[date] = [log_file]
         else:
             date_files[date].append(log_file)

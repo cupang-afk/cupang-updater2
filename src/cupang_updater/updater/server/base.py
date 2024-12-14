@@ -36,7 +36,8 @@ class ServerUpdaterConfig:
 
     Attributes:
         common_config (dict[str, Any]): Common configuration for the server updater.
-        server_config (dict[str, Any]): Configuration specific to the server (corresponds to server fields in config.yaml).
+        server_config (dict[str, Any]): Configuration specific to the server
+            (corresponds to server fields in config.yaml).
     """
 
     common_config: dict[str, Any] = field(default=None)
@@ -80,7 +81,8 @@ class ServerUpdater(UpdaterBase):
 
         Args:
             server_data (ResourceData): Information about the server to be updated.
-            updater_config (ServerUpdaterConfig): Configuration specifics for the server updater.
+            updater_config (ServerUpdaterConfig): Configuration specifics
+                for the server updater.
         """
         self.server_data = server_data
         self.updater_config = updater_config

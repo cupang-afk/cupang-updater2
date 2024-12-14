@@ -53,7 +53,8 @@ opt_main.add_argument(
     dest="skip_version_check",
     action="store_true",
     default=False,
-    help="Skip version check, ultimately re-download server/plugins (default: %(default)s)",
+    help="Skip version check, "
+    + "ultimately re-download server/plugins (default: %(default)s)",
 )
 opt_main.add_argument(
     "-sc",

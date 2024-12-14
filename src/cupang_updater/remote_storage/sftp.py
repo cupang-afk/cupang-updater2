@@ -7,15 +7,7 @@ from typing import IO
 import paramiko
 
 from ..utils.common import ensure_path
-from .base import RemoteIO
-
-
-class SFTPPathNotFoundError(Exception):
-    pass
-
-
-class SFTPPathIsExists(Exception):
-    pass
+from .base import RemoteIO, RemotePathIsExistsError, RemotePathNotFoundError
 
 
 class SFTPStorage(RemoteIO):
@@ -44,7 +36,7 @@ class SFTPStorage(RemoteIO):
         try:
             path = ensure_path(path).as_posix()
             return stat.S_ISDIR(self._sftp.stat(path).st_mode)
-        except IOError:
+        except OSError:
             return False
 
     def close(self):
@@ -79,7 +71,7 @@ class SFTPStorage(RemoteIO):
     def remove(self, path: str):
         path = ensure_path(path).as_posix()
         if not self.exists(path):
-            raise SFTPPathNotFoundError
+            raise RemotePathNotFoundError(path)
         _need_to_delete = []
         _need_to_delete.append(path)
         if self.is_dir(path):
@@ -96,7 +88,7 @@ class SFTPStorage(RemoteIO):
         try:
             self._sftp.stat(path)
             return True
-        except IOError:
+        except OSError:
             return False
 
     def mkdir(self, path: str, parents: bool = False, exists_ok: bool = False):
@@ -105,7 +97,7 @@ class SFTPStorage(RemoteIO):
             if exists_ok:
                 return
             else:
-                raise SFTPPathIsExists(path)
+                raise RemotePathIsExistsError(path)
         if parents:
             parent_dir = ensure_path(path)
             for parent in parent_dir.parents[::-1]:
@@ -124,12 +116,12 @@ class SFTPStorage(RemoteIO):
 
     def is_dir(self, path: str) -> bool:
         if not self.exists(path):
-            raise SFTPPathNotFoundError(path)
+            raise RemotePathNotFoundError(path)
         return self._is_dir(path)
 
     def is_file(self, path: str) -> bool:
         if not self.exists(path):
-            raise SFTPPathNotFoundError(path)
+            raise RemotePathNotFoundError(path)
         return not self._is_dir(path)
 
     def glob(self, path: str, pattern: str = "*", recursive: bool = False):
@@ -173,7 +165,7 @@ class SFTPStorage(RemoteIO):
             if self.is_dir(path):
                 (to_local_path / relative_path).mkdir(parents=True, exist_ok=True)
             else:
-                self._sftp.get(path, str((to_local_path / relative_path)))
+                self._sftp.get(path, str(to_local_path / relative_path))
 
     def uploadfo(self, stream: IO[bytes], to_remote_path: str):
         to_remote_path = ensure_path(to_remote_path).as_posix()
