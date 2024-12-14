@@ -79,7 +79,7 @@ opt_config.add_argument(
     action="store",
     metavar="PATH",
     type=Path,
-    default=_temp_appdir.config_path,
+    default=None,  # automaticaly decided when AppDir is created unless set explicitly
     help=f"Set config file (default: {_temp_appdir.config_path.relative_to(cwd)})",
 )
 opt_config.add_argument(

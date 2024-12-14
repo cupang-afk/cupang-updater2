@@ -20,11 +20,13 @@ class AppDir:
     caches_path: Path = field(init=False)
 
     def __post_init__(self):
+        self.base_dir = self.base_dir.absolute()
         self.config_path = (
             (self.base_dir / "config.yaml")
             if not self.config_path
             else self.config_path
         )
+        self.config_path = self.config_path.absolute()
         self.ext_updater_path = self.base_dir / "ext_updater"
         self.logs_path = self.base_dir / "logs"
         self.caches_path = self.base_dir / "caches"
