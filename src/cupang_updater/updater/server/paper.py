@@ -36,16 +36,36 @@ class PaperUpdater(ServerUpdater):
     def _get_update_data(self, server_type: str, server_version: str):
         headers = {"Accept": "application/json"}
         res = self.make_requests(
-            self.make_url(self.api, server_type, "versions", server_version, "builds"),
+            self.make_url(
+                self.api,
+                server_type,
+                "versions",
+                server_version,
+            ),
+            headers=headers,
+        )
+        if not self.check_content_type(res, "application/json"):
+            return
+
+        version_data: dict = json.loads(res.read())
+        latest_build: int = max(version_data["builds"])
+
+        res = self.make_requests(
+            self.make_url(
+                self.api,
+                server_type,
+                "versions",
+                server_version,
+                "builds",
+                latest_build,
+            ),
             headers=headers,
         )
         if not self.check_content_type(res, "application/json"):
             return
 
         builds_data: dict = json.loads(res.read())
-        sorted_build_data = {k["build"]: k for k in builds_data["builds"]}
-        latest_build_data = sorted_build_data[max(sorted_build_data.keys())]
-        return latest_build_data
+        return builds_data
 
     def get_update(self) -> DownloadInfo | None:
         server_type = self.updater_config.server_config["type"]
