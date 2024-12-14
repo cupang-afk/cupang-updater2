@@ -64,7 +64,8 @@ opt_main.add_argument(
     help="Scan plugins without checking update (default: %(default)s)",
 )
 opt_main.add_argument(
-    "-V" "--debug",
+    "-V",
+    "--debug",
     dest="debug",
     action="store_true",
     default=False,
