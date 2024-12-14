@@ -16,7 +16,7 @@ class JenkinsAPI:
         self.url = url
         self.headers = {"Accept": "application/json"}
         self.latest_data: dict[str, Any] = None
-        self.latest_build_number: int = None
+        self.latest_build_number: int = -1  # in case build number not found
 
     def _get_latest_data(self) -> dict[str, Any] | None:
         """
@@ -80,7 +80,7 @@ class JenkinsAPI:
         Returns:
             int: The build number of the latest build.
         """
-        if not self.latest_build_number:
+        if self.latest_build_number < 0:
             self._get_latest_data()
         return self.latest_build_number
 
