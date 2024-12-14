@@ -2,7 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 - 2024-12-18
+
+### Bug Fixes
+
+- Fix config path point to wrong file path when `--config-dir` is set ([9ef25d3](9ef25d3e06b51f73e631c867017640e62608ac56))
+- Fix logger type when error is raised while calling make_requests ([74ebd45](74ebd457f97a53b5e348e0c3ec14748636a667d3))
+- Fix jenkins fallback build number when request is fail ([6927d58](6927d58e98b5d162143852ef07cd0a18538f8e2b))
+- Debug command arguments ([88cce15](88cce15729c19972e4376e66b42ce2c759bdded4))
+- Fix raised error after download is finished ([7bc1748](7bc17487d1b354efda1dbffa42e1d0ddad83299b))
+
+### Features
+
+- Add download retry ([5a74395](5a74395f1151c84feaa068df9eca66c933e5e0e6))
+- Add `--skip-version-check` when updating ([b1394da](b1394dad371fa0f6185d2daa0d52686f8b2f5464))
+
+### Performance
+
+- Make Paper update request few small data instead one big data and do sorting ([ba8d6fe](ba8d6fe574bbc749f7cd59907268d592a805e785))
+
+### Refactor
+
+- Setup ruff rules and refactor ([71d77c1](71d77c1f264d66b4367fb84df6561f3d6ec7d807))
+
+### Bump
+
+- Version 0.2.3 -> 0.3.0 ([]())
+
 ## 0.2.3 - 2024-12-02
+
+[bedff0e](bedff0ee397298ea9e8bd71c36f9854caea0a741)...[13bf527](13bf5272236d2544bd14fa61631631ca22ff298e)
 
 ### Bug Fixes
 
@@ -10,7 +39,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.2.2 -> 0.2.3 ([]())
+- Version 0.2.2 -> 0.2.3 ([13bf527](13bf5272236d2544bd14fa61631631ca22ff298e))
 
 ## 0.2.2 - 2024-11-22
 
