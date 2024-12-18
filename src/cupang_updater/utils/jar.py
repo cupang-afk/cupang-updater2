@@ -16,8 +16,12 @@ _jar_yaml_schema = sy.MapCombined(
     {
         sy.Optional("name"): sy.Str(),
         sy.Optional("version"): sy.Str() | sy.Seq(sy.Str()),
-        sy.Optional("authors"): sy.Seq(sy.Str()),
-        sy.Optional("author"): sy.Str(),
+        # treat both author and authors the same,
+        # either a single string or a list of strings
+        # this way we avoid problems with author names
+        # that contain square brackets
+        sy.Optional("authors"): sy.Str() | sy.Seq(sy.Str()),
+        sy.Optional("author"): sy.Str() | sy.Seq(sy.Str()),
     },
     sy.Str(),
     sy.Any(),
