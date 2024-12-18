@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.1 - 2024-12-18
+
+### Bug Fixes
+
+- Normalize plugin authors ([8439b80](8439b805db49074268a419f74352f488eb03dfbe))
+
+### Bump
+
+- Version 0.3.0 -> 0.3.1 ([]())
+
 ## 0.3.0 - 2024-12-18
+
+[13bf527](13bf5272236d2544bd14fa61631631ca22ff298e)...[6ff6ea9](6ff6ea9c20ad86afaac79f3db931f9133176ed6d)
 
 ### Bug Fixes
 
@@ -27,7 +39,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.2.3 -> 0.3.0 ([]())
+- Version 0.2.3 -> 0.3.0 ([6ff6ea9](6ff6ea9c20ad86afaac79f3db931f9133176ed6d))
 
 ## 0.2.3 - 2024-12-02
 
