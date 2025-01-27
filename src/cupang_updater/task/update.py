@@ -166,6 +166,7 @@ def _handle_plugin_update(
     plugin_data: dict,
     plugin_common: dict = None,
 ) -> tuple[str, Path, ResourceData, PluginUpdaterConfig] | None:
+    log = get_logger()
     plugin_file: Path = plugins_folder / plugin_data["file"]
     plugin_version: str = plugin_data["version"]
 
@@ -201,6 +202,7 @@ def _handle_plugin_update(
             update_data = updater.get_update()
         except Exception as e:
             updater.log.exception(f"Failed to get plugin update: {e}")
+            log.error(f"Trying another plugin updater for {plugin_name}")
             continue
 
         if not update_data:
