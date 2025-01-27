@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.2 - 2025-01-27
+
+### Bug Fixes
+
+- Log ([8837099](8837099098f457418f2d89af4228fdee7f9006fb))
+
+### Bump
+
+- Version 0.3.1 -> 0.3.2 ([]())
+
 ## 0.3.1 - 2024-12-18
+
+[6ff6ea9](6ff6ea9c20ad86afaac79f3db931f9133176ed6d)...[cf2cd93](cf2cd93e8e27f163bc66ea54886f86972dab7f8a)
 
 ### Bug Fixes
 
@@ -10,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.3.0 -> 0.3.1 ([]())
+- Version 0.3.0 -> 0.3.1 ([cf2cd93](cf2cd93e8e27f163bc66ea54886f86972dab7f8a))
 
 ## 0.3.0 - 2024-12-18
 
