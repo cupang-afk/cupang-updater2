@@ -2,7 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 - 2025-02-23
+
+### Bug Fixes
+
+- Increase make_requests timeout ([2de54c4](2de54c4241215696a6576cc97f7a6cd492e309cf))
+- Show which updater in download progress ([01096b9](01096b93d47aa0dc050996878aaa887e70600966))
+- Use dirty_load to allow nasty json form in config yaml ([227904a](227904a3d45ec5a6a5a8cd9a4f75810d868111df))
+- Register LeafMC and SpigotMC server updater ([243c8ac](243c8ac1a77bcd2b2e915d31efb68ef18c42c0a4))
+
+### Features
+
+- Rewrote GithubAPI ([4e1cb48](4e1cb4815e61fd4bc56c5c653abe969bb459136d))
+- Rewrote JenkinsAPI, update BungeeCord updater to respect server.version ([772dd3e](772dd3eaf494d9a3b8543ed76d33ba1ba89e4b4d))
+- Add SpigotMC server updater ([9081f8a](9081f8ac7328ad1811ff2a6660eb681f7346441a))
+- Add LeafMC server updater ([7738f35](7738f35ac73486761c7498904c6670d9693f8b2d))
+
+### Bump
+
+- Version 0.3.2 -> 0.4.0 ([]())
+
 ## 0.3.2 - 2025-01-27
+
+[cf2cd93](cf2cd93e8e27f163bc66ea54886f86972dab7f8a)...[5dbe5a0](5dbe5a0402cf904280042c263f8d039350990ba3)
 
 ### Bug Fixes
 
@@ -10,7 +32,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.3.1 -> 0.3.2 ([]())
+- Version 0.3.1 -> 0.3.2 ([5dbe5a0](5dbe5a0402cf904280042c263f8d039350990ba3))
 
 ## 0.3.1 - 2024-12-18
 
