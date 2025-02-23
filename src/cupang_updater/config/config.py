@@ -43,7 +43,9 @@ class Config:
                 raise FileNotFoundError(
                     f"Config file not found at {file} and default value not set"
                 )
-        self._config = sy.load(yaml_string, get_config_schema())
+        self._config = sy.dirty_load(
+            yaml_string, get_config_schema(), allow_flow_style=True
+        )
 
     def reload(self):
         """
