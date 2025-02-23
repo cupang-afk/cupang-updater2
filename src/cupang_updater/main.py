@@ -37,8 +37,10 @@ from .updater.plugin.modrinth import ModrinthUpdater
 from .updater.plugin.spigot import SpigotUpdater
 from .updater.server.bungee import BungeeUpdater
 from .updater.server.custom import CustomUrlServerUpdater
+from .updater.server.leaf import LeafUpdater
 from .updater.server.paper import PaperUpdater
 from .updater.server.purpur import PurpurUpdater
+from .updater.server.spigot import SpigotMCUpdater
 from .utils.config import fix_config, update_server_type
 from .utils.url import parse_url
 
@@ -58,9 +60,11 @@ def _initialize_environment(cmd_opts):
 
 
 def _register_updaters():
+    server_updater_register(LeafUpdater)
     server_updater_register(PurpurUpdater)
     server_updater_register(PaperUpdater)
     server_updater_register(BungeeUpdater)
+    server_updater_register(SpigotMCUpdater)
     server_updater_register(CustomUrlServerUpdater)
 
     plugin_updater_register(CustomUrlPluginUpdater)
