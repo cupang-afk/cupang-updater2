@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.2 - 2025-02-23
+
+### Bug Fixes
+
+- None check for github updater ([9defb3d](9defb3dccd1de0ceb2e101c52b6334ddfd784fdd))
+
+### Bump
+
+- Version 0.4.1 -> 0.4.2 ([]())
+
 ## 0.4.1 - 2025-02-23
+
+[830c5e9](830c5e921c5cce53015a3e8df59cd8c3ecb0a9f5)...[b0fb6b3](b0fb6b34f932fb0ed202a683034ee66dea881407)
 
 ### Bug Fixes
 
@@ -10,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.4.0 -> 0.4.1 ([]())
+- Version 0.4.0 -> 0.4.1 ([b0fb6b3](b0fb6b34f932fb0ed202a683034ee66dea881407))
 
 ## 0.4.0 - 2025-02-23
 
