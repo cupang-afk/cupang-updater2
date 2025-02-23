@@ -33,17 +33,36 @@ class BungeeUpdater(ServerUpdater):
         return self.new_updater_config
 
     def get_update(self) -> DownloadInfo | None:
-        self.log.info(
-            f'Using {self.get_updater_name()} updater will ignore "version" (if set)'
-        )
+        server_version = self.updater_config.server_config["version"]
+        match self.parse_version(server_version):
+            case v if v <= self.parse_version("1.7.10"):
+                get_build_number = 1119
+            case v if v <= self.parse_version("1.6.4"):
+                get_build_number = 701
+            case v if v <= self.parse_version("1.6.2"):
+                get_build_number = 666
+            case v if v <= self.parse_version("1.5.2"):
+                get_build_number = 548
+            case v if v <= self.parse_version("1.5.0"):
+                get_build_number = 386
+            case v if v <= self.parse_version("1.4.7"):
+                get_build_number = 251
+            case _:
+                get_build_number = -1
 
         api = JenkinsAPI(self.api)
+        api_build_data, api_build_number = api.get_build_data(get_build_number)
+        if not api_build_data:
+            return
+        api_artifact_data = api.get_artifact_data(api_build_data, "BungeeCord")
+        if not api_artifact_data:
+            return
         local_build_number = self.updater_config.server_config["build_number"] or 0
-        remote_build_number = api.get_build_number()
+        remote_build_number = api_build_number
         if not self.has_new_version(local_build_number, remote_build_number):
             return
 
-        url = api.get_artifact_url("BungeeCord")
+        url = api.get_artifact_url(api_artifact_data, api_build_number)
         if not url:
             return
 

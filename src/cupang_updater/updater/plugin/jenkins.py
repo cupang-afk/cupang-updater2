@@ -55,15 +55,21 @@ class JenkinsUpdater(PluginUpdater):
             return
 
         api = JenkinsAPI(jenkins_url)
+        api_build_data, api_build_number = api.get_build_data()
+        if not api_build_data:
+            return
+        api_artifact_data = api.get_artifact_data(api_build_data, name_regex)
+        if not api_artifact_data:
+            return
 
         local_build_number = (
             self.updater_config.plugin_config.get("build_number", 0) or 0
         )
-        remote_build_number = api.get_build_number()
+        remote_build_number = api_build_number
         if not self.has_new_version(local_build_number, remote_build_number):
             return
 
-        url = api.get_artifact_url(name_regex)
+        url = api.get_artifact_url(api_artifact_data, api_build_number)
         if not url:
             return
 
