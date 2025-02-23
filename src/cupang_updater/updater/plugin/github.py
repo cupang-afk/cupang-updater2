@@ -76,6 +76,7 @@ class GithubUpdater(PluginUpdater):
         )
         if not api_release_data:
             return
+        api_release_data = api_release_data[0]
         api_tag_data = api.get_tag_data(api_release_data["tag_name"])
         if not api_tag_data:
             return
