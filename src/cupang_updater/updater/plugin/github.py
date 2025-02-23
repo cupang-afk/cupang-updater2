@@ -71,18 +71,19 @@ class GithubUpdater(PluginUpdater):
     def _get_git_data(
         self, api: GithubAPI, prerelease: bool, name_regex: str
     ) -> None | tuple[list[dict[str, Any]], dict[str, Any], str]:
+        _null = [None, None, None]
         api_release_data = api.get_releases_data(
             _filter="prerelease" if prerelease else "release"
         )
         if not api_release_data:
-            return
+            return _null
         api_release_data = api_release_data[0]
         api_tag_data = api.get_tag_data(api_release_data["tag_name"])
         if not api_tag_data:
-            return
+            return _null
         api_asset_data = api.get_asset_data(api_release_data, name_regex)
         if not api_asset_data:
-            return
+            return _null
 
         return api_release_data, api_tag_data, api_asset_data
 
@@ -105,6 +106,8 @@ class GithubUpdater(PluginUpdater):
         api_release_data, api_tag_data, api_asset_data = self._get_git_data(
             api, prerelease, name_regex
         )
+        if any(not x for x in [api_release_data, api_tag_data, api_asset_data]):
+            return
 
         commit = ""
         if compare_to == "commit":
