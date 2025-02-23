@@ -146,7 +146,7 @@ def _handle_server_update(
                 update_data.url,
                 server_file,
                 update_data.headers,
-                server_type.capitalize(),
+                f"[{updater.get_updater_name()}] {server_type}",
             ),
         ):
             return
@@ -215,7 +215,7 @@ def _handle_plugin_update(
                 update_data.url,
                 new_plugin_file,
                 update_data.headers,
-                plugin_name,
+                f"[{updater.get_updater_name()}] {plugin_name}",
             )
         ):
             return
