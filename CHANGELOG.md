@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.1 - 2025-02-23
+
+### Bug Fixes
+
+- Fix list indicies must be integers while using github updater ([b121584](b121584c9f541e4e9a0431dad1bb8a04caf087c9))
+
+### Bump
+
+- Version 0.4.0 -> 0.4.1 ([]())
+
 ## 0.4.0 - 2025-02-23
+
+[5dbe5a0](5dbe5a0402cf904280042c263f8d039350990ba3)...[830c5e9](830c5e921c5cce53015a3e8df59cd8c3ecb0a9f5)
 
 ### Bug Fixes
 
@@ -20,7 +32,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.3.2 -> 0.4.0 ([]())
+- Version 0.3.2 -> 0.4.0 ([830c5e9](830c5e921c5cce53015a3e8df59cd8c3ecb0a9f5))
 
 ## 0.3.2 - 2025-01-27
 
