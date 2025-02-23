@@ -38,7 +38,7 @@ def make_requests(
     url: str,
     method: str = "GET",
     headers: dict[str, str] | None = None,
-    timeout: int = 10,
+    timeout: int = 60,
 ) -> HTTPResponse | None:
     """
     Make an HTTP request to the given URL using the given method and headers.
