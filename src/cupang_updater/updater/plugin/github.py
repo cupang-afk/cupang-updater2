@@ -1,3 +1,5 @@
+from typing import Any
+
 import strictyaml as sy
 
 from ..base import DownloadInfo, ResourceData
@@ -66,6 +68,23 @@ class GithubUpdater(PluginUpdater):
     def get_config_update(self) -> PluginUpdaterConfig:
         return self.new_updater_config
 
+    def _get_git_data(
+        self, api: GithubAPI, prerelease: bool, name_regex: str
+    ) -> None | tuple[list[dict[str, Any]], dict[str, Any], str]:
+        api_release_data = api.get_releases_data(
+            _filter="prerelease" if prerelease else "release"
+        )
+        if not api_release_data:
+            return
+        api_tag_data = api.get_tag_data(api_release_data["tag_name"])
+        if not api_tag_data:
+            return
+        api_asset_data = api.get_asset_data(api_release_data, name_regex)
+        if not api_asset_data:
+            return
+
+        return api_release_data, api_tag_data, api_asset_data
+
     def get_update(self) -> DownloadInfo | None:
         repo = self.updater_config.plugin_config.get("repo")
         if not repo:
@@ -81,12 +100,15 @@ class GithubUpdater(PluginUpdater):
 
         prerelease = self.updater_config.plugin_config.get("prerelease", False)
 
-        api = GithubAPI(repo, prerelease, self.token)
+        api = GithubAPI(repo, self.token)
+        api_release_data, api_tag_data, api_asset_data = self._get_git_data(
+            api, prerelease, name_regex
+        )
 
         commit = ""
         if compare_to == "commit":
             local_commit = self.updater_config.plugin_config.get("commit")
-            remote_commit = api.get_commit()
+            remote_commit = api.get_commit_sha(api_tag_data)
             if not self.has_new_version(local_commit, remote_commit, "!="):
                 return
             commit = remote_commit
@@ -94,17 +116,17 @@ class GithubUpdater(PluginUpdater):
             local_version = self.parse_version(self.plugin_data.version)
             match compare_to:
                 case "tags":
-                    remote_version = self.parse_version(api.get_tag())
+                    remote_version = self.parse_version(api_release_data["tag_name"])
                 case "release_name":
-                    remote_version = self.parse_version(api.get_release_name())
+                    remote_version = self.parse_version(api_release_data["name"])
                 case "file_name":
-                    remote_version = self.parse_version(api.get_file_name(name_regex))
+                    remote_version = self.parse_version(api_asset_data["name"])
                 case _:
                     remote_version = self.parse_version("1.0")
             if not self.has_new_version(local_version, remote_version):
                 return
 
-        url = api.get_asset_url(name_regex)
+        url = api.get_asset_url(api_asset_data)
         if not url:
             return
 
