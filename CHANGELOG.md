@@ -2,7 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.3 - 2025-02-25
+
+### Bug Fixes
+
+- Fix logger file name ([6851d09](6851d094209ba24a3fac894f0595419ee0e5babb))
+
+### Documentation
+
+- Config comments ([b1dd90b](b1dd90badf123a91ccb402a2fbe1e68dd2bf7ce7))
+
+### Refactor
+
+- Refactor content-type checking ([e26c184](e26c18464f5283dae83fca4b774ab8dc83941a53))
+- Reduce complexity ([cf9ae1f](cf9ae1f24a501bfd558fd23dc6df97fabd02db10))
+
+### Bump
+
+- Version 0.4.2 -> 0.4.3 ([]())
+
 ## 0.4.2 - 2025-02-23
+
+[b0fb6b3](b0fb6b34f932fb0ed202a683034ee66dea881407)...[e8db732](e8db732793645f0fbfbab3ee4c564738ff3d6e18)
 
 ### Bug Fixes
 
@@ -10,7 +31,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.4.1 -> 0.4.2 ([]())
+- Version 0.4.1 -> 0.4.2 ([e8db732](e8db732793645f0fbfbab3ee4c564738ff3d6e18))
 
 ## 0.4.1 - 2025-02-23
 
