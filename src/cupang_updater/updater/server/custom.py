@@ -24,23 +24,20 @@ class CustomUrlServerUpdater(ServerUpdater):
         return ServerUpdaterConfigSchema()
 
     def get_update(self) -> DownloadInfo | None:
+        server_type = self.updater_config.server_config["type"]
         url = self.updater_config.server_config["custom_url"]
         if not url:
             return
 
-        with self.make_requests(url, method="HEAD") as res:
-            if not any(
-                self.check_content_type(res, x)
-                for x in [
-                    "application/java-archive",
-                    "application/octet-stream",
-                    "application/zip",
-                ]
-            ):
-                self.log.error(
-                    f"When checking update for {self.get_updater_name()}, "
-                    + f"got {url} but its not a file"
-                )
-                return
+        if not self.check_valid_content_types(
+            url,
+            f"[{self.get_updater_name()}] {server_type}",
+            [
+                "application/java-archive",
+                "application/octet-stream",
+                "application/zip",
+            ],
+        ):
+            return
 
         return DownloadInfo(url)

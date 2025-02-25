@@ -50,6 +50,7 @@ class LeafUpdater(ServerUpdater):
         return self.new_updater_config
 
     def get_update(self) -> DownloadInfo | None:
+        server_type = self.updater_config.server_config["type"]
         server_version = self.updater_config.server_config["version"]
         repo = "Winds-Studio/Leaf"
         name_regex = r"leaf\-[0-9.]+\.jar"
@@ -73,18 +74,17 @@ class LeafUpdater(ServerUpdater):
         url = api.get_asset_url(api_asset_data)
         if not url:
             return
-        with self.make_requests(url, method="HEAD") as res:
-            allowed_types = [
+
+        if not self.check_valid_content_types(
+            url,
+            f"[{self.get_updater_name()}] {server_type}",
+            [
                 "application/java-archive",
                 "application/octet-stream",
                 "application/zip",
-            ]
-            if not any(self.check_content_type(res, ct) for ct in allowed_types):
-                self.log.error(
-                    f"When checking update for {self.get_updater_name()}, "
-                    + f"got {url} but its not a file"
-                )
-                return None
+            ],
+        ):
+            return
 
         self.new_updater_config.common_config["commit"] = remote_commit
         return DownloadInfo(url, {"Authorization": f"Bearer {self.token}"})

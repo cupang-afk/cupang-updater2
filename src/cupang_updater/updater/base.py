@@ -182,3 +182,17 @@ class UpdaterBase(metaclass=ABCMeta):
         if get_cmd_opts().skip_version_check:
             return True
         return _compare[op](old, new)
+
+    @final
+    def check_valid_content_types(
+        self, url: str, name: str, content_types: list[str]
+    ) -> bool:
+        with self.make_requests(url, method="HEAD") as res:
+            if not any(self.check_content_type(res, ct) for ct in content_types):
+                self.log.error(
+                    f"Invalid content type for {url} when checking {name} update,"
+                    f" got [{res.getheader('content-type', "null")}] "
+                    f" expecting one of these: {content_types}"
+                )
+                return False
+        return True

@@ -46,6 +46,7 @@ class PurpurUpdater(ServerUpdater):
         return json.loads(res.read())
 
     def get_update(self) -> DownloadInfo | None:
+        server_type = self.updater_config.server_config["type"]
         server_version = self.updater_config.server_config["version"]
         update_data = self._get_update_data(server_version)
         if not update_data:
@@ -62,20 +63,17 @@ class PurpurUpdater(ServerUpdater):
             remote_build_number,
             "download",
         )
-        with self.make_requests(url, method="HEAD") as res:
-            if not any(
-                self.check_content_type(res, x)
-                for x in [
-                    "application/java-archive",
-                    "application/octet-stream",
-                    "application/zip",
-                ]
-            ):
-                self.log.error(
-                    f"When checking update for {self.get_updater_name()}, "
-                    + "got {url} but its not a file"
-                )
-                return
+
+        if not self.check_valid_content_types(
+            url,
+            f"[{self.get_updater_name()}] {server_type}",
+            [
+                "application/java-archive",
+                "application/octet-stream",
+                "application/zip",
+            ],
+        ):
+            return
 
         self.new_updater_config.server_config["build_number"] = remote_build_number
         return DownloadInfo(url)
