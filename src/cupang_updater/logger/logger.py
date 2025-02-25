@@ -110,7 +110,7 @@ _name_format = "console_*_*.log"
 _date_format = "%Y-%m-%d"
 
 
-def _get_next_exec_n(logs_folder: Path) -> int:
+def _get_next_exec_n(logs_folder: Path, current_date: datetime) -> int:
     """
     Get the next execution number for log files in the given folder.
 
@@ -134,36 +134,38 @@ def _get_next_exec_n(logs_folder: Path) -> int:
         return 1
 
     latest_date = max(date_files.keys())
-
-    execution_numbers = [
-        int(log_file.stem.split("_")[-1]) for log_file in date_files[latest_date]
-    ]
+    if latest_date < current_date.date():
+        return 1
+    else:
+        execution_numbers = [
+            int(log_file.stem.split("_")[-1]) for log_file in date_files[latest_date]
+        ]
 
     return max(execution_numbers, default=0) + 1
 
 
-def _rename_latest_log(logs_folder: Path) -> None:
+def _rename_latest_log(logs_folder: Path, current_date: datetime) -> None:
     """
     Rename the latest log file with the current date and the next execution number.
     """
     latest_log = logs_folder / "latest.log"
     if not latest_log.is_file():
         return
-    current_date = datetime.now()
-    execution_number = _get_next_exec_n(logs_folder)
-    new_name = f"console_{current_date.strftime(_date_format)}_{execution_number}.log"
+    execution_number = _get_next_exec_n(logs_folder, current_date)
+    new_name = (
+        f"console_{current_date.date().strftime(_date_format)}_{execution_number}.log"
+    )
     shutil.move(latest_log, logs_folder / new_name)
 
 
-def _compress_old_logs(logs_folder: Path) -> None:
+def _compress_old_logs(logs_folder: Path, current_date: datetime) -> None:
     """
     Compress logs that are at least one day old into a .zip file with the current date.
     """
-    current_date = datetime.now().date()
 
     for log_file in logs_folder.glob(_name_format):
         log_date = parse_date_string(log_file.stem.split("_")[1]).date()
-        if current_date == log_date:
+        if current_date.date() == log_date:
             continue
 
         zip_file_path = logs_folder / f"{log_date.strftime(_date_format)}.zip"
@@ -182,11 +184,11 @@ def setup_logger(logs_path: Path) -> None:
     Args:
         logs_path (Path): The directory path where log files are stored.
     """
-    current_date = datetime.now().date()
+    current_date = datetime.now()
     cmd_opts = get_cmd_opts()
 
-    _rename_latest_log(logs_path)
-    _compress_old_logs(logs_path)
+    _rename_latest_log(logs_path, current_date)
+    _compress_old_logs(logs_path, current_date)
 
     logger = logging.getLogger(app_name)
     logger.setLevel(logging.DEBUG)
@@ -220,7 +222,7 @@ def setup_logger(logs_path: Path) -> None:
     logger.addHandler(stream_handler)
     logger.addHandler(file_handler)
 
-    logger.info(f"Logger created at {current_date.strftime(_date_format)}")
+    logger.info(f"Logger created at {current_date.date().strftime(_date_format)}")
 
     global _logger
     _logger = logger
