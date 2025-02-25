@@ -71,7 +71,8 @@ class SpigotUpdater(PluginUpdater):
             self.log.info(
                 f"Plugin {self.plugin_data.name} is premium\n"
                 f"Download it yourself at https://www.spigotmc.org/resources/{resource_id}\n"
-                f"New version found: {remote_version}"
+                f"New version: {remote_version}\n"
+                f"Local version: {local_version}"
             )
             return
 

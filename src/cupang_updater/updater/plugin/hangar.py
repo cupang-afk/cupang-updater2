@@ -89,13 +89,9 @@ class HangarUpdater(PluginUpdater):
 
     def get_update(self) -> DownloadInfo | None:
         project_id: str = self.updater_config.plugin_config["id"]
-        if not project_id:
-            return
         platform: str = self.updater_config.plugin_config["platform"]
-        if not platform:
-            return
         channel: str = self.updater_config.plugin_config["channel"]
-        if not channel:
+        if not (project_id and platform and channel):
             return
 
         update_data = self._get_update_data(project_id, channel)

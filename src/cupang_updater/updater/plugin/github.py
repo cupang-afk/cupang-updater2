@@ -89,15 +89,10 @@ class GithubUpdater(PluginUpdater):
 
     def get_update(self) -> DownloadInfo | None:
         repo = self.updater_config.plugin_config.get("repo")
-        if not repo:
-            return
-
         name_regex = self.updater_config.plugin_config.get("name_regex")
-        if not name_regex:
-            return
-
         compare_to = self.updater_config.plugin_config.get("compare_to")
-        if not compare_to:
+
+        if not (repo and name_regex and compare_to):
             return
 
         prerelease = self.updater_config.plugin_config.get("prerelease", False)
@@ -109,26 +104,25 @@ class GithubUpdater(PluginUpdater):
         if any(not x for x in [api_release_data, api_tag_data, api_asset_data]):
             return
 
-        commit = ""
         if compare_to == "commit":
-            local_commit = self.updater_config.plugin_config.get("commit")
-            remote_commit = api.get_commit_sha(api_tag_data)
-            if not self.has_new_version(local_commit, remote_commit, "!="):
-                return
-            commit = remote_commit
+            _local = self.updater_config.plugin_config.get("commit")
+            _remote = api.get_commit_sha(api_tag_data)
+            op = "!="
         else:
-            local_version = self.parse_version(self.plugin_data.version)
+            _local = self.parse_version(self.plugin_data.version)
             match compare_to:
                 case "tags":
-                    remote_version = self.parse_version(api_release_data["tag_name"])
+                    _remote = self.parse_version(api_release_data["tag_name"])
                 case "release_name":
-                    remote_version = self.parse_version(api_release_data["name"])
+                    _remote = self.parse_version(api_release_data["name"])
                 case "file_name":
-                    remote_version = self.parse_version(api_asset_data["name"])
+                    _remote = self.parse_version(api_asset_data["name"])
                 case _:
-                    remote_version = self.parse_version("1.0")
-            if not self.has_new_version(local_version, remote_version):
-                return
+                    _remote = self.parse_version("1.0")
+            op = "<"
+
+        if not self.has_new_version(_local, _remote, op):
+            return
 
         url = api.get_asset_url(api_asset_data)
         if not url:
@@ -146,6 +140,6 @@ class GithubUpdater(PluginUpdater):
             return
 
         self.new_updater_config.plugin_config["commit"] = (
-            remote_commit if compare_to == "commit" else ""
+            _remote if compare_to == "commit" else ""
         )
         return DownloadInfo(url, {"Authorization": f"Bearer {self.token}"})

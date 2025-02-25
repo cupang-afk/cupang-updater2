@@ -138,6 +138,8 @@ class GithubAPI:
         Returns:
             str | None: The URL of the matching asset, or None if no match is found.
         """
+        if not release_data:
+            return
 
         _name_regex = re.compile(name_regex)
         assets = list(

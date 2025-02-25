@@ -138,11 +138,8 @@ class ModrinthUpdater(PluginUpdater):
 
     def get_update(self) -> DownloadInfo | None:
         project_id = self.updater_config.plugin_config["id"]
-        if not project_id:
-            return
-
         name_regex = self.updater_config.plugin_config.get("name_regex")
-        if not name_regex:
+        if not (project_id and name_regex):
             return
 
         loaders = self.updater_config.plugin_config.get("loaders")

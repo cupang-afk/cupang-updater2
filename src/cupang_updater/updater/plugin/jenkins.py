@@ -47,19 +47,14 @@ class JenkinsUpdater(PluginUpdater):
 
     def get_update(self) -> DownloadInfo | None:
         jenkins_url = self.updater_config.plugin_config.get("url")
-        if not jenkins_url:
-            return
-
         name_regex = self.updater_config.plugin_config.get("name_regex")
-        if not name_regex:
+        if not (jenkins_url and name_regex):
             return
 
         api = JenkinsAPI(jenkins_url)
         api_build_data, api_build_number = api.get_build_data()
-        if not api_build_data:
-            return
         api_artifact_data = api.get_artifact_data(api_build_data, name_regex)
-        if not api_artifact_data:
+        if not (api_build_data and api_artifact_data):
             return
 
         local_build_number = (

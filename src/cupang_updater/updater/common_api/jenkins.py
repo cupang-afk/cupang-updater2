@@ -84,6 +84,8 @@ class JenkinsAPI:
             dict[str, Any] | None: The data of the matching artifact,
                 or None if no match is found.
         """
+        if not build_data:
+            return
 
         _name_regex = re.compile(name_regex)
         artifacts = [
@@ -104,6 +106,8 @@ class JenkinsAPI:
         Returns:
             str | None: The URL of the matching artifact, or None if an error occurred.
         """
+        if not artifact_data:
+            return
 
         return make_url(
             self.url,

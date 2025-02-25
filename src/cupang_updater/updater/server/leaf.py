@@ -1,3 +1,5 @@
+from typing import Any
+
 import strictyaml as sy
 
 from ..base import DownloadInfo, ResourceData
@@ -49,6 +51,22 @@ class LeafUpdater(ServerUpdater):
     def get_config_update(self):
         return self.new_updater_config
 
+    def _get_git_data(
+        self, api: GithubAPI, server_version: str, name_regex: str
+    ) -> None | tuple[list[dict[str, Any]], dict[str, Any], str]:
+        _null = [None, None, None]
+        api_release_data = api.get_release_data(f"ver-{server_version}")
+        if not api_release_data:
+            return _null
+        api_tag_data = api.get_tag_data(api_release_data["tag_name"])
+        if not api_tag_data:
+            return _null
+        api_asset_data = api.get_asset_data(api_release_data, name_regex)
+        if not api_asset_data:
+            return _null
+
+        return api_release_data, api_tag_data, api_asset_data
+
     def get_update(self) -> DownloadInfo | None:
         server_type = self.updater_config.server_config["type"]
         server_version = self.updater_config.server_config["version"]
@@ -56,19 +74,15 @@ class LeafUpdater(ServerUpdater):
         name_regex = r"leaf\-[0-9.]+\.jar"
 
         api = GithubAPI(repo, self.token)
-        api_release_data = api.get_release_data(f"ver-{server_version}")
-        if not api_release_data:
-            return
-        api_tag_data = api.get_tag_data(api_release_data["tag_name"])
-        if not api_tag_data:
-            return
-        api_asset_data = api.get_asset_data(api_release_data, name_regex)
-        if not api_asset_data:
+        api_release_data, api_tag_data, api_asset_data = self._get_git_data(
+            api, server_version, name_regex
+        )
+        if any(not x for x in [api_release_data, api_tag_data, api_asset_data]):
             return
 
         local_commit = self.updater_config.common_config.get("commit")
         remote_commit = api.get_commit_sha(api_tag_data)
-        if self.has_new_version(local_commit, remote_commit, "=="):
+        if not self.has_new_version(local_commit, remote_commit, "!="):
             return None
 
         url = api.get_asset_url(api_asset_data)
