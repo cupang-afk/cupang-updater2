@@ -51,14 +51,14 @@ class HangarUpdater(PluginUpdater):
             plugin_schema=sy.Map(
                 {
                     "id": sy.EmptyNone() | sy.Str(),
-                    "platform": sy.EmptyNone() | PlatformType(),
+                    "platform": sy.EmptyNone() | PlatformType() | sy.Str(),
                     "channel": Channel(),
                 }
             ),
             plugin_default="""\
                 # id: example https://hangar.papermc.io/[author]/[your project id here]
                 # platform: paper, waterfall, or velocity
-                # channel: release, snapshot, or alpha
+                # channel: e.g. release, snapshot, or alpha
                 id:
                 platform: paper
                 channel: release
