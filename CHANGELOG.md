@@ -2,7 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.4 - 2025-03-21
+
+### Bug Fixes
+
+- Allow any channel name for hangar updater ([6f265fd](6f265fd4b0d57279e3f016131046d321b8d39c6f))
+- Update leaf server regex ([99b0979](99b097940473dbcb41f38080f3a03f5f2d6606f1))
+
+### Bump
+
+- Version 0.4.3 -> 0.4.4 ([]())
+
 ## 0.4.3 - 2025-02-25
+
+[e8db732](e8db732793645f0fbfbab3ee4c564738ff3d6e18)...[831ec0d](831ec0da6a2ed281fa2ca9f3ef51f723bd2c5a1c)
 
 ### Bug Fixes
 
@@ -19,7 +32,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bump
 
-- Version 0.4.2 -> 0.4.3 ([]())
+- Version 0.4.2 -> 0.4.3 ([831ec0d](831ec0da6a2ed281fa2ca9f3ef51f723bd2c5a1c))
 
 ## 0.4.2 - 2025-02-23
 
