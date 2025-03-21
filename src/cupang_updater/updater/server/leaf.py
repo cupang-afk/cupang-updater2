@@ -36,12 +36,10 @@ class LeafUpdater(ServerUpdater):
     @staticmethod
     def get_config_schema():
         return ServerUpdaterConfigSchema(
-            common_schema=sy.Map(
-                {
-                    "token": sy.EmptyNone() | sy.Str(),
-                    "commit": sy.EmptyNone() | sy.Str(),
-                }
-            ),
+            common_schema=sy.Map({
+                "token": sy.EmptyNone() | sy.Str(),
+                "commit": sy.EmptyNone() | sy.Str(),
+            }),
             common_default="""\
                 token: # github token
                 commit: # auto generate
@@ -71,7 +69,7 @@ class LeafUpdater(ServerUpdater):
         server_type = self.updater_config.server_config["type"]
         server_version = self.updater_config.server_config["version"]
         repo = "Winds-Studio/Leaf"
-        name_regex = r"leaf\-[0-9.]+\.jar"
+        name_regex = r"leaf\-([0-9.]+)*(\-[0-9]+)?\.jar"
 
         api = GithubAPI(repo, self.token)
         api_release_data, api_tag_data, api_asset_data = self._get_git_data(
@@ -88,7 +86,6 @@ class LeafUpdater(ServerUpdater):
         url = api.get_asset_url(api_asset_data)
         if not url:
             return
-
         if not self.check_valid_content_types(
             url,
             f"[{self.get_updater_name()}] {server_type}",
