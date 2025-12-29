@@ -95,16 +95,19 @@ class PaperUpdater(ServerUpdater):
             f"{server_type}-{server_version}-{remote_build_number}.jar",
         )
 
-        if not self.check_valid_content_types(
-            url,
-            f"[{self.get_updater_name()}] {server_type}",
-            [
-                "application/java-archive",
-                "application/octet-stream",
-                "application/zip",
-            ],
-        ):
-            return
+        # Unreliable because url can be a downloadble file 
+        # TODO: Add Proper checking here using Content-Disposition or something
+        #if not self.check_valid_content_types(
+        #    url,
+        #    f"[{self.get_updater_name()}] {server_type}",
+        #    [
+        #        "application/java-archive",
+        #        "application/octet-stream",
+        #        "application/zip",
+        #    ],
+        #):
+        #    return
 
         self.new_updater_config.server_config["build_number"] = update_data["build"]
         return DownloadInfo(url)
+
